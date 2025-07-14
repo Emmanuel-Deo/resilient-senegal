@@ -1,0 +1,85 @@
+.sidebar {
+  width: 260px;
+  background: #f9fafb;
+  border-right: 1px solid #e5e7eb;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-y: auto;
+  padding-bottom: 16px;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
+}
+
+.accordion-group {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  margin: 8px 10px;
+  transition: background 0.2s;
+}
+
+.accordion-header:hover {
+  background-color: #e5e7eb;
+}
+
+/* Remove arrow icon since there is no toggle now */
+.accordion-header::after {
+  content: "";
+}
+
+.accordion-body {
+  margin: 0 10px 10px;
+  display: block; /* Always show */
+}
+
+.item-btn {
+  width: 100%;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: none;
+  text-align: left;
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  margin-top: 4px;
+  border-radius: 5px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.item-btn:hover {
+  background: #f0f2f5;
+}
+
+.item-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.btn-icon {
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary {
+  margin: 20px 12px 12px;
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #6b7280;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  word-break: break-word;
+}

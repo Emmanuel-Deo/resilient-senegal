@@ -1,0 +1,58 @@
+.info-panel {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  width: 500px;
+}
+
+.info-panel h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.info-description {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.year-selector {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.year-selector button {
+  padding: 4px 10px;
+  margin: 0 5px;
+  border: none;
+  background: #1976d2;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.year-selector button:hover {
+  background: #dee3e9;
+}
+
+.selected-year {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.chart-description {
+  font-size: 13px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.analysis-text {
+  font-size: 14px;
+  color: #444;
+  margin-top: 10px;
+}

@@ -1,0 +1,29 @@
+.admin-selection-bar {
+  display: flex;
+  gap: 0.5rem; /* Reduced gap for a more compact layout */
+  padding: 0.5rem;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  max-width: 300px; /* Restrict width if needed */
+}
+
+.admin-selection-bar select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  flex: 1; /* Allow selects to shrink/grow evenly */
+  min-width: 100px; /* Prevent them from becoming too small */
+}
+
+.admin-selection-bar select:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+.admin-selection-bar select:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
+}
