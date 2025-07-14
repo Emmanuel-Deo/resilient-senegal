@@ -1,6 +1,6 @@
 {
   "name": "resilient-senegal",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@supabase/supabase-js": "^2.50.3",
