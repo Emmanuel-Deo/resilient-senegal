@@ -52,7 +52,7 @@ export default function AdminSelectionBar({ onGeoJsonChange }) {
     setAdm2Options([...adm2].sort());
     setAdm3Options([]);
     setSelectedAdm3("");
-  }, [geoJsonData, selectedAdm1]);
+  }, [geoJsonData, selectedAdm1, setSelectedAdm2, setSelectedAdm3]);
 
   // Populate ADM3 options
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function AdminSelectionBar({ onGeoJsonChange }) {
     );
     setAdm3Options([...adm3].sort());
     setSelectedAdm3("");
-  }, [geoJsonData, selectedAdm1, selectedAdm2]);
+  }, [geoJsonData, selectedAdm1, selectedAdm2, setSelectedAdm3]);
 
   // Build AOI name and update filtered GeoJSON
   useEffect(() => {

@@ -8,11 +8,8 @@ export default function InfoPanel() {
   const [filteredGeoJson, setFilteredGeoJson] = useState(null);
   const { selectedAdm1, selectedAdm2, selectedAdm3 } = useMapContext();
   const {
-    aoi,
-  
     year,
     setYear,
-    dataset,
 
   } = useMapContext();
 
