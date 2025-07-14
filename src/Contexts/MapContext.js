@@ -2,24 +2,25 @@ import React, { createContext, useContext, useState, useMemo } from "react";
 
 const MapContext = createContext();
 
-
 export const MapProvider = ({ children }) => {
   const [selectedAdm0, setSelectedAdm0] = useState("Senegal");
-  const [selectedAdm1, setSelectedAdm1] = useState(null);
-  const [selectedAdm2, setSelectedAdm2] = useState(null);
-  const [selectedAdm3, setSelectedAdm3] = useState(null);
+  const [selectedAdm1, setSelectedAdm1] = useState("");
+  const [selectedAdm2, setSelectedAdm2] = useState("");
+  const [selectedAdm3, setSelectedAdm3] = useState("");
 
   const [filteredGeoJson, setFilteredGeoJson] = useState(null);
   const [customClassification, setCustomClassification] = useState(null);
 
-
-  const [selectedBasemap, setSelectedBasemap] = useState("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
+  const [selectedBasemap, setSelectedBasemap] = useState(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+  );
   const [dataset, setDataset] = useState("NDVI");
   const [aoi, setAoi] = useState("Senegal");
-  const [month, setMonth] = useState("04");
+  const [month, setMonth] = useState("3");
   const [year, setYear] = useState("2000");
   const [zoomLevel, setZoomLevel] = useState("7");
-  
+  const [frequency, setFrequency] = useState("monthly");
+
   const sanitize = (str) =>
     str?.trim().replace(/\s+/g, "-").replace(/\//g, "-") || null;
 
@@ -31,14 +32,10 @@ export const MapProvider = ({ children }) => {
     if (selectedAdm3) hierarchy.push(sanitize(selectedAdm3));
 
     const safeParts = hierarchy.filter(Boolean);
-
-    const name = `resilientsenegal:${dataset}_${year}${paddedMonth}_${safeParts.join("_")}`;
-    return name;
+    return `resilientsenegal:${dataset}_${year}${paddedMonth}_${safeParts.join("_")}`;
   }, [dataset, year, month, selectedAdm0, selectedAdm1, selectedAdm2, selectedAdm3]);
 
   const layerKey = layerName;
-
-  console.log(layerName)
 
   return (
     <MapContext.Provider
@@ -55,6 +52,9 @@ export const MapProvider = ({ children }) => {
         setYear,
         zoomLevel,
         setZoomLevel,
+        frequency,
+        setFrequency,
+        selectedAdm0,
         setSelectedAdm0,
         selectedAdm1,
         setSelectedAdm1,
@@ -62,9 +62,10 @@ export const MapProvider = ({ children }) => {
         setSelectedAdm2,
         selectedAdm3,
         setSelectedAdm3,
-        filteredGeoJson, 
+        filteredGeoJson,
         setFilteredGeoJson,
-        customClassification, setCustomClassification,
+        customClassification,
+        setCustomClassification,
         layerName,
         layerKey,
       }}

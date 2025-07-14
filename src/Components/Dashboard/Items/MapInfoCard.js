@@ -5,12 +5,13 @@ import {
   Download,
   Printer,
   ChartPie,
-  LineChart
+  LineChart,
+  BarChart2
 } from "lucide-react";
 import MonthlyStats from "./MonthlyStats";
 
 const MapInfoCard = () => {
-  const { aoi , year, setYear, month, setMonth, dataset } = useMapContext();
+  const { aoi, year, setYear, month, setMonth, dataset } = useMapContext();
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   return (
@@ -18,8 +19,8 @@ const MapInfoCard = () => {
       <div className="map-info-left">
         <div className="map-info-title">{aoi} {dataset} {year} {month}</div>
         <div className="map-info-chart">
-            <MonthlyStats/>
-      </div>
+          <MonthlyStats />
+        </div>
       </div>
 
       <div className="map-info-center">

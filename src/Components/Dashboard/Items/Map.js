@@ -22,36 +22,36 @@ export default function Map() {
     month,
     dataset,
     filteredGeoJson,
-    setCustomClassification, // ✅ Access setter from context
+    setCustomClassification,
   } = useMapContext();
 
   const [customLayerName, setCustomLayerName] = useState(null);
   const [customZoomGeoJSON, setcustomZoomGeoJSON] = useState(null);
   const [showWMS, setShowWMS] = useState(true);
   const [enableDraw, setEnableDraw] = useState(false);
-  const [hasStartedDraw, setHasStartedDraw] = useState(false); // Track state for showing reset button
+  const [hasStartedDraw, setHasStartedDraw] = useState(false);
 
   const featureGroupRef = useRef(null);
   const drawControlRef = useRef(null);
-  const drawRef = useRef(null); // Used to clear drawn layers
+  const drawRef = useRef(null);
 
   const startPolygonDraw = () => {
     if (customLayerName || hasStartedDraw) {
-      // ✅ RESET to original state
+      // Reset to original state
       setCustomLayerName(null);
       setShowWMS(true);
       setEnableDraw(false);
       setHasStartedDraw(false);
-      setCustomClassification(null); // ✅ Clear custom stats
+      setCustomClassification(null);
 
       if (drawRef.current) {
         drawRef.current.clearLayers();
       }
     } else {
-      // ✅ ENABLE drawing mode
+      // Enable drawing mode
       setShowWMS(false);
       setEnableDraw(true);
-      setHasStartedDraw(true); // Enable reset button immediately
+      setHasStartedDraw(true);
 
       setTimeout(() => {
         if (drawControlRef.current?._toolbars?.draw?._modes?.polygon?.handler) {
@@ -78,12 +78,11 @@ export default function Map() {
 
     if (result?.layer && result?.classification) {
       setCustomLayerName(result.layer);
-      setCustomClassification(result.classification); // ✅ Set custom stats
+      setCustomClassification(result.classification);
       setShowWMS(true);
       setEnableDraw(false);
     }
 
-    // Store the drawn layer for clearing later
     if (drawRef.current) {
       drawRef.current.clearLayers();
       drawRef.current.addLayer(layer);
@@ -123,7 +122,6 @@ export default function Map() {
         className="custom-map"
       >
         <ZoomToGeoJSONBounds data={customZoomGeoJSON || filteredGeoJson} />
-
         <TileLayer url={selectedBasemap} />
 
         {showWMS && activeLayerName && (

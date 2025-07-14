@@ -8,27 +8,23 @@ import MapGallery from "./Pages/MapGallery";
 import Documentation from "./Pages/Documentation";
 import { MapProvider } from "./Contexts/MapContext";
 
-
 function App() {
   return (
-
-<MapProvider> 
- <Router>
-      <div className="app-container">
-        <Navbar />
-        <div className="app-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/mapgallery" element={<MapGallery />} />
-
-            <Route path="/documentation" element={<Documentation />} />
-          </Routes>
+    <MapProvider>
+      <Router>
+        <div className="app-container">
+          <Navbar />
+          <div className="app-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/mapgallery" element={<MapGallery />} />
+              <Route path="/documentation" element={<Documentation />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
     </MapProvider>
-
   );
 }
 

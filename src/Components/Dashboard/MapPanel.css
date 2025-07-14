@@ -39,6 +39,7 @@
   background: transparent; /* no additional background wrapper */
   box-shadow: none; /* no extra shadow wrapper */
 }
+
 .zoomControl-overlay{
    top: 10px;
   right: 50px;
