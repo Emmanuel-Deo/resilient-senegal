@@ -19,8 +19,14 @@ export const handlePolygonDraw = async ({ drawnGeoJSON, backendURL, year, month,
     }
 
     return {
-      layer: data.geoserver_layer,
-      classification: data.classification,
+      observation: {
+        layer: data.observation.geoserver_layer,
+        classification: data.observation.classification,
+      },
+      ltm: {
+        layer: data.ltm.geoserver_layer,
+        classification: data.ltm.classification,
+      },
     };
   } catch (err) {
     return { error: err.message || "Network error" };

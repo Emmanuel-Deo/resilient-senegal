@@ -28,7 +28,8 @@ export default function Map() {
     setCustomClassification,
   } = useMapContext();
 
-  const [customLayerName, setCustomLayerName] = useState(null);
+  const [customObsLayer, setCustomObsLayer] = useState(null);
+  const [customLtmLayer, setCustomLtmLayer] = useState(null);
   const [customZoomGeoJSON, setcustomZoomGeoJSON] = useState(null);
   const [showWMS, setShowWMS] = useState(true);
   const [enableDraw, setEnableDraw] = useState(false);
@@ -44,7 +45,8 @@ export default function Map() {
   const leftCompareLayerRef = useRef(null);
   const rightCompareLayerRef = useRef(null);
 
-  const activeLayerName = customLayerName || defaultLayerName;
+  const activeLayerName = customObsLayer || defaultLayerName;
+  const activeLtmLayerName = customLtmLayer || ltmLayerName;
 
   const showErrorToast = (message) => {
     setErrorMessage(message);
@@ -52,20 +54,17 @@ export default function Map() {
   };
 
   const startPolygonDraw = () => {
-    
-    if (customLayerName || hasStartedDraw) {
-      setCustomLayerName(null);
+    if (customObsLayer || hasStartedDraw) {
+      setCustomObsLayer(null);
+      setCustomLtmLayer(null);
       setShowWMS(true);
       setEnableDraw(false);
       setHasStartedDraw(false);
       setCustomClassification(null);
       setcustomZoomGeoJSON(null);
       drawRef.current?.clearLayers();
-    } 
-    
-    else {
+    } else {
       if (isComparing) stopCompare();
-      
       setShowWMS(false);
       setEnableDraw(true);
       setHasStartedDraw(true);
@@ -98,9 +97,10 @@ export default function Map() {
       return;
     }
 
-    if (result?.layer && result?.classification) {
-      setCustomLayerName(result.layer);
-      setCustomClassification(result.classification);
+    if (result?.observation?.layer && result?.ltm?.layer) {
+      setCustomObsLayer(result.observation.layer);
+      setCustomLtmLayer(result.ltm.layer);
+      setCustomClassification(result.observation.classification);
       setShowWMS(true);
       setEnableDraw(false);
       setHasStartedDraw(false);
@@ -141,22 +141,12 @@ export default function Map() {
 
     const map = featureGroupRef.current._map;
 
-    // Clear previous layers
-    if (leftCompareLayerRef.current) {
-      map.removeLayer(leftCompareLayerRef.current);
-      leftCompareLayerRef.current = null;
-    }
-    if (rightCompareLayerRef.current) {
-      map.removeLayer(rightCompareLayerRef.current);
-      rightCompareLayerRef.current = null;
-    }
-    if (sideBySideRef.current) {
-      sideBySideRef.current.remove();
-      sideBySideRef.current = null;
-    }
+    if (leftCompareLayerRef.current) map.removeLayer(leftCompareLayerRef.current);
+    if (rightCompareLayerRef.current) map.removeLayer(rightCompareLayerRef.current);
+    if (sideBySideRef.current) sideBySideRef.current.remove();
 
     const left = L.tileLayer.wms("http://127.0.0.1:8080/geoserver/resilientsenegal/wms?", {
-      layers: defaultLayerName,
+      layers: activeLayerName,
       format: "image/png",
       transparent: true,
       version: "1.1.0",
@@ -165,7 +155,7 @@ export default function Map() {
     });
 
     const right = L.tileLayer.wms("http://127.0.0.1:8080/geoserver/resilientsenegal/wms?", {
-      layers: ltmLayerName,
+      layers: activeLtmLayerName,
       format: "image/png",
       transparent: true,
       version: "1.1.0",
@@ -180,104 +170,59 @@ export default function Map() {
     right.addTo(map);
 
     sideBySideRef.current = L.control.sideBySide(left, right).addTo(map);
-  }, [defaultLayerName, ltmLayerName, dataset, opacity, isComparing]);
+  }, [activeLayerName, activeLtmLayerName, dataset, opacity, isComparing]);
 
   return (
     <>
-      {/* Toast */}
       {errorMessage && (
         <div style={{
-          position: "absolute",
-          top: "60px",
-          left: "10px",
-          zIndex: 10000,
-          backgroundColor: "#d32f2f",
-          color: "#fff",
-          padding: "10px 16px",
-          borderRadius: "6px",
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)",
-          maxWidth: "320px",
-          fontSize: "14px",
-          lineHeight: "1.4",
+          position: "absolute", top: "60px", left: "10px", zIndex: 10000,
+          backgroundColor: "#d32f2f", color: "#fff", padding: "10px 16px",
+          borderRadius: "6px", boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)",
+          maxWidth: "320px", fontSize: "14px", lineHeight: "1.4",
         }}>
           ⚠️ {errorMessage}
         </div>
       )}
 
-      {/* Compare Banner */}
       {isComparing && (
         <div style={{
-          position: "absolute",
-          top: "10px",
-          left: "550px",
-          zIndex: 10000,
-          backgroundColor: "#ffffff",
-          border: "1px solid #ccc",
-          borderRadius: "6px",
-          padding: "6px 12px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-          display: "flex",
-          gap: "12px",
-          fontWeight: 600,
-          fontSize: "13px",
+          position: "absolute", top: "10px", left: "550px", zIndex: 10000,
+          backgroundColor: "#ffffff", border: "1px solid #ccc", borderRadius: "6px",
+          padding: "6px 12px", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+          display: "flex", gap: "12px", fontWeight: 600, fontSize: "13px",
         }}>
           <span style={{ color: "#2196f3" }}>
             ⬅️ {dataset} - {year}/{String(month).padStart(2, "0")}
           </span>
-          <span style={{ color: "#f44336" }}>➡️ {dataset} - LTM</span>
+          <span style={{ color: "#7d7d7dff", fontSize: "18px" }}>|</span>
+          <span style={{ color: "#f44336" }}>{dataset} - LTM ➡️ </span>
         </div>
       )}
 
-      {/* Draw Button */}
       <button onClick={startPolygonDraw} style={{
-        position: "absolute",
-        zIndex: 10000,
-        top: "10px",
-        left: "10px",
-        padding: "6px 12px",
-        backgroundColor: "#ffffff",
-        color: "#000000",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer",
-        fontWeight: "500",
+        position: "absolute", zIndex: 10000, top: "10px", left: "10px",
+        padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000",
+        border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500",
         boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
       }}>
-        {(customLayerName || hasStartedDraw) ? "Reset to Original Layer" : "Draw Polygon"}
+        {(customObsLayer || hasStartedDraw) ? "Clear Polygon" : "Draw Polygon"}
       </button>
 
-      {/* Compare Button */}
       <button onClick={isComparing ? stopCompare : startCompare} style={{
-        position: "absolute",
-        zIndex: 10000,
-        top: "50px",
-        left: "10px",
-        padding: "6px 12px",
-        backgroundColor: "#ffffff",
-        color: "#000000",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer",
-        fontWeight: "500",
+        position: "absolute", zIndex: 10000, top: "10px", left: "124px",
+        padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000",
+        border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500",
         boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
       }}>
-        {isComparing ? "Exit Compare" : "Compare Layers"}
+        {isComparing ? "Exit Compare" : "Start Compare"}
       </button>
 
-      {/* Opacity Slider */}
       <div style={{
-        position: "absolute",
-        zIndex: 10000,
-        top: "10px",
-        right: "224px",
-        backgroundColor: "#fff",
-        padding: "6px 8px",
-        borderRadius: "6px",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        fontSize: "14px",
+        position: "absolute", zIndex: 10000, top: "10px", right: "224px",
+        backgroundColor: "#fff", padding: "6px 8px", borderRadius: "6px",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.2)", display: "flex",
+        alignItems: "center", gap: "8px", fontSize: "14px",
       }}>
         <label htmlFor="opacityRange" style={{ fontWeight: 500 }}>Opacity</label>
         <input
@@ -347,9 +292,10 @@ export default function Map() {
                   shapeOptions: {
                     color: "#2196f3",
                     weight: 2,
-                    opacity: 0.7,
-                    fillOpacity: 0.3,
-                    fillColor: "#2196f3",
+                    fill: false,
+                    // opacity: 0.7,
+                    // fillOpacity: 0.3,
+                    // fillColor: "#2196f3",
                     dashArray: "3",
                     lineCap: "round",
                     lineJoin: "round",
