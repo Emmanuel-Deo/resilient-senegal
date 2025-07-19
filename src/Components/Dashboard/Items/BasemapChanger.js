@@ -26,7 +26,7 @@ export default function BasemapChanger() {
     <div
       style={{
         display: "flex",
-        gap: "12px",
+        gap: "6px",
         position: "relative",
         padding: "6px",
         borderRadius: "8px",
