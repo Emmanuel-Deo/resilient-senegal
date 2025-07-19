@@ -71,9 +71,13 @@ export default function Map() {
     };
     setcustomZoomGeoJSON(customZoomGeoJSON);
 
+  
     const result = await handlePolygonDraw({
       drawnGeoJSON,
       backendURL: "http://127.0.0.1:8000",
+      year,
+      month,
+      dataset,
     });
 
     if (result?.layer && result?.classification) {
