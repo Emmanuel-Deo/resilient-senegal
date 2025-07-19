@@ -1,7 +1,7 @@
 // utils/handlePolygonDraw.js
-export async function handlePolygonDraw({ drawnGeoJSON, year, month, dataset, backendURL }) {
+export const handlePolygonDraw = async ({ drawnGeoJSON, backendURL, year, month, dataset }) => {
   try {
-    const response = await fetch(`${backendURL}/process-polygon`, {
+    const res = await fetch(`${backendURL}/process-polygon`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -12,19 +12,17 @@ export async function handlePolygonDraw({ drawnGeoJSON, year, month, dataset, ba
       }),
     });
 
-    const result = await response.json();
-    console.log("Server response:", result);
+    const data = await res.json();
 
-    if (result.geoserver_layer && result.classification) {
-      return {
-        layer: result.geoserver_layer,
-        classification: result.classification,
-      };
+    if (!res.ok || data.error) {
+      return { error: data.error || "An unknown error occurred." };
     }
 
-    throw new Error("Incomplete response from server");
-  } catch (error) {
-    console.error("Error sending polygon:", error);
-    return null;
+    return {
+      layer: data.geoserver_layer,
+      classification: data.classification,
+    };
+  } catch (err) {
+    return { error: err.message || "Network error" };
   }
-}
+};

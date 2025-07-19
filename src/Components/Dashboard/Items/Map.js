@@ -30,6 +30,7 @@ export default function Map() {
   const [showWMS, setShowWMS] = useState(true);
   const [enableDraw, setEnableDraw] = useState(false);
   const [hasStartedDraw, setHasStartedDraw] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const featureGroupRef = useRef(null);
   const drawControlRef = useRef(null);
@@ -43,6 +44,7 @@ export default function Map() {
       setEnableDraw(false);
       setHasStartedDraw(false);
       setCustomClassification(null);
+      setcustomZoomGeoJSON(null); // Reset zoom
 
       if (drawRef.current) {
         drawRef.current.clearLayers();
@@ -61,17 +63,23 @@ export default function Map() {
     }
   };
 
+  const showErrorToast = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 4000);
+  };
+
   const handleDrawCreate = async (e) => {
     const layer = e.layer;
     const drawnGeoJSON = layer.toGeoJSON();
 
     const customZoomGeoJSON = {
       type: "FeatureCollection",
-      features: [layer.toGeoJSON()],
+      features: [drawnGeoJSON],
     };
     setcustomZoomGeoJSON(customZoomGeoJSON);
 
-  
     const result = await handlePolygonDraw({
       drawnGeoJSON,
       backendURL: "http://127.0.0.1:8000",
@@ -80,11 +88,29 @@ export default function Map() {
       dataset,
     });
 
+    if (result?.error) {
+      showErrorToast(result.error);
+
+      setCustomLayerName(null);
+      setCustomClassification(null);
+      setEnableDraw(false);
+      setHasStartedDraw(false);
+      setShowWMS(true);
+      setcustomZoomGeoJSON(null);
+
+      if (drawRef.current) {
+        drawRef.current.clearLayers();
+      }
+
+      return;
+    }
+
     if (result?.layer && result?.classification) {
       setCustomLayerName(result.layer);
       setCustomClassification(result.classification);
       setShowWMS(true);
       setEnableDraw(false);
+      setHasStartedDraw(false);
     }
 
     if (drawRef.current) {
@@ -97,16 +123,39 @@ export default function Map() {
 
   return (
     <>
+      {/* Error Toast */}
+      {errorMessage && (
+        <div
+          style={{
+            position: "absolute",
+            top: "60px",
+            left: "10px",
+            zIndex: 10000,
+            backgroundColor: "#d32f2f",
+            color: "#fff",
+            padding: "10px 16px",
+            borderRadius: "6px",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)",
+            maxWidth: "320px",
+            fontSize: "14px",
+            lineHeight: "1.4",
+          }}
+        >
+          ⚠️ {errorMessage}
+        </div>
+      )}
+
+      {/* Draw Button */}
       <button
         className="draw-btn"
         onClick={startPolygonDraw}
         style={{
           position: "absolute",
-          zIndex: 1000,
+          zIndex: 10000,
           top: "10px",
           left: "10px",
           padding: "6px 12px",
-          backgroundColor: "#ffffffff",
+          backgroundColor: "#ffffff",
           color: "#000000",
           border: "none",
           borderRadius: "4px",
