@@ -31,6 +31,7 @@ export default function Map() {
   const [enableDraw, setEnableDraw] = useState(false);
   const [hasStartedDraw, setHasStartedDraw] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [opacity, setOpacity] = useState(1);
 
   const featureGroupRef = useRef(null);
   const drawControlRef = useRef(null);
@@ -38,27 +39,23 @@ export default function Map() {
 
   const startPolygonDraw = () => {
     if (customLayerName || hasStartedDraw) {
-      // Reset to original state
       setCustomLayerName(null);
       setShowWMS(true);
       setEnableDraw(false);
       setHasStartedDraw(false);
       setCustomClassification(null);
-      setcustomZoomGeoJSON(null); // Reset zoom
+      setcustomZoomGeoJSON(null);
 
       if (drawRef.current) {
         drawRef.current.clearLayers();
       }
     } else {
-      // Enable drawing mode
       setShowWMS(false);
       setEnableDraw(true);
       setHasStartedDraw(true);
 
       setTimeout(() => {
-        if (drawControlRef.current?._toolbars?.draw?._modes?.polygon?.handler) {
-          drawControlRef.current._toolbars.draw._modes.polygon.handler.enable();
-        }
+        drawControlRef.current?._toolbars?.draw?._modes?.polygon?.handler?.enable();
       }, 300);
     }
   };
@@ -90,18 +87,7 @@ export default function Map() {
 
     if (result?.error) {
       showErrorToast(result.error);
-
-      setCustomLayerName(null);
-      setCustomClassification(null);
-      setEnableDraw(false);
-      setHasStartedDraw(false);
-      setShowWMS(true);
-      setcustomZoomGeoJSON(null);
-
-      if (drawRef.current) {
-        drawRef.current.clearLayers();
-      }
-
+      startPolygonDraw();
       return;
     }
 
@@ -147,7 +133,6 @@ export default function Map() {
 
       {/* Draw Button */}
       <button
-        className="draw-btn"
         onClick={startPolygonDraw}
         style={{
           position: "absolute",
@@ -158,14 +143,47 @@ export default function Map() {
           backgroundColor: "#ffffff",
           color: "#000000",
           border: "none",
-          borderRadius: "4px",
+          borderRadius: "6px",
           cursor: "pointer",
+          fontWeight: "500",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
         }}
       >
         {(customLayerName || hasStartedDraw)
           ? "Reset to Original Layer"
           : "Draw Polygon"}
       </button>
+
+      {/* Opacity Slider */}
+      <div
+        style={{
+          position: "absolute",
+          zIndex: 10000,
+          top: "10px",
+          right: "232px",
+          backgroundColor: "#fff",
+          padding: "8px 12px",
+          borderRadius: "6px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          fontSize: "14px",
+        }}
+      >
+        <label htmlFor="opacityRange" style={{ fontWeight: 500 }}>
+          Opacity
+        </label>
+        <input
+          id="opacityRange"
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value={opacity}
+          onChange={(e) => setOpacity(parseFloat(e.target.value))}
+        />
+      </div>
 
       <MapContainer
         zoomControl={false}
@@ -187,6 +205,7 @@ export default function Map() {
             version="1.1.0"
             styles={dataset}
             srs="EPSG:4326"
+            opacity={opacity}
           />
         )}
 
@@ -214,7 +233,16 @@ export default function Map() {
                   showArea: true,
                   showLength: true,
                   metric: ["km", "m"],
-                  shapeOptions: { color: "#f39c12" },
+                  shapeOptions: {
+                    color: "#2196f3",
+                    weight: 2,
+                    opacity: 0.7,
+                    fillOpacity: 0.3,
+                    fillColor: "#2196f3",
+                    dashArray: "3",
+                    lineCap: "round",
+                    lineJoin: "round",
+                  },
                 },
               }}
             />

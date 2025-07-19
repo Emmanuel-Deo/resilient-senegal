@@ -8,10 +8,6 @@
 
 .overlay-item {
   position: absolute;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 8px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* .overlay-item:first-child {
@@ -26,7 +22,7 @@
 }
 
 .bamaps-overlay {
-  top: 10px;
+  top: 8px;
   right: 10px;
   padding: 2px;
 }

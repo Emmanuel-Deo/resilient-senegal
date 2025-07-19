@@ -1,7 +1,6 @@
 import React from "react";
 import { useMapContext } from "../../../Contexts/MapContext";
 
-// Define color stops for NDVI, LST, and PPT
 const ndviColorStops = [
   { color: "#1a9641", label: "0.8557" },
   { color: "#52b151", label: "0.7270" },
@@ -15,26 +14,25 @@ const ndviColorStops = [
 ];
 
 const lstColorStops = [
-  { color: "#ca0020", label: "296.3250" },
-  { color: "#f4a582", label: "303.8413" },
-  { color: "#f7f7f7", label: "311.3575" },
-  { color: "#92c5de", label: "318.8737" },
-  { color: "#0571b0", label: "326.3900" },
+  { color: "#ca0020", label: "296.3" },
+  { color: "#f4a582", label: "303.8" },
+  { color: "#f7f7f7", label: "311.4" },
+  { color: "#92c5de", label: "318.9" },
+  { color: "#0571b0", label: "326.4" },
 ];
 
 const pptColorStops = [
-  { color: "#f7fbff", label: "0.0000" },
-  { color: "#deebf7", label: "0.2630" },
-  { color: "#c6dbef", label: "0.5260" },
-  { color: "#9ecae1", label: "0.7889" },
-  { color: "#6baed6", label: "1.0519" },
-  { color: "#4292c6", label: "1.3149" },
-  { color: "#2171b5", label: "1.5779" },
-  { color: "#08519c", label: "1.8206" },
-  { color: "#08306b", label: "2.0229" },
+  { color: "#f7fbff", label: "0.00" },
+  { color: "#deebf7", label: "0.26" },
+  { color: "#c6dbef", label: "0.53" },
+  { color: "#9ecae1", label: "0.79" },
+  { color: "#6baed6", label: "1.05" },
+  { color: "#4292c6", label: "1.31" },
+  { color: "#2171b5", label: "1.58" },
+  { color: "#08519c", label: "1.82" },
+  { color: "#08306b", label: "2.02" },
 ];
 
-// Utility function to get legend colors based on dataset
 const getColorStops = (dataset) => {
   switch (dataset) {
     case "LST":
@@ -50,40 +48,50 @@ const getColorStops = (dataset) => {
 export default function Legend() {
   const { dataset } = useMapContext();
   const colorStops = getColorStops(dataset);
-
-  const gradient = `linear-gradient(to bottom, ${colorStops.map(s => s.color).join(", ")})`;
+  const gradient = `linear-gradient(to bottom, ${colorStops.map((s) => s.color).join(", ")})`;
 
   return (
     <div style={{
-      background: "#fff",
-      padding: "12px",
-      borderRadius: "8px",
-      fontSize: "14px",
-      boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      gap: "10px",
+      background: "rgba(255,255,255)",
+      padding: "10px 12px",
+      borderRadius: "6px",
+      border: "1px solid #ddd",
+      fontSize: "12px",
+      fontFamily: "system-ui, sans-serif",
+      color: "#333",
       width: "fit-content"
     }}>
       <div style={{
-        width: "20px",
-        height: "200px",
-        background: gradient,
-        borderRadius: "4px",
-        border: "1px solid #ccc"
-      }} />
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        height: "200px",
-        fontSize: "12px",
-        color: "#333"
+        fontWeight: 600,
+        marginBottom: "8px",
+        fontSize: "14px",
+        textAlign: "center"
       }}>
-        {colorStops.map((stop, idx) => (
-          <span key={idx}>{stop.label}</span>
-        ))}
+        Legend
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{
+          width: "12px",
+          height: "160px",
+          background: gradient,
+          borderRadius: "2px",
+          border: "1px solid #ccc"
+        }} />
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          height: "160px",
+          color: "#444",
+          fontWeight: 400,
+          letterSpacing: "-0.2px"
+        }}>
+          {colorStops.map((stop, idx) => (
+            <span key={idx} style={{ lineHeight: "1", marginBottom: "2px" }}>
+              {stop.label}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
