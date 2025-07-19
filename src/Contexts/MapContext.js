@@ -35,6 +35,17 @@ export const MapProvider = ({ children }) => {
     return `resilientsenegal:${dataset}_${year}${paddedMonth}_${safeParts.join("_")}`;
   }, [dataset, year, month, selectedAdm0, selectedAdm1, selectedAdm2, selectedAdm3]);
 
+  const ltmLayerName = useMemo(() => {
+    const paddedMonth = String(month).padStart(2, "0");
+    const hierarchy = [sanitize(selectedAdm0)];
+    if (selectedAdm1) hierarchy.push(sanitize(selectedAdm1));
+    if (selectedAdm2) hierarchy.push(sanitize(selectedAdm2));
+    if (selectedAdm3) hierarchy.push(sanitize(selectedAdm3));
+
+    const safeParts = hierarchy.filter(Boolean);
+    return `resilientsenegal:${dataset}_LTM_${paddedMonth}_${safeParts.join("_")}`;
+  }, [dataset, month, selectedAdm0, selectedAdm1, selectedAdm2, selectedAdm3]);
+
   const layerKey = layerName;
 
   return (
@@ -67,6 +78,7 @@ export const MapProvider = ({ children }) => {
         customClassification,
         setCustomClassification,
         layerName,
+        ltmLayerName,
         layerKey,
       }}
     >
