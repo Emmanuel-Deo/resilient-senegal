@@ -41,6 +41,8 @@ export default function Map() {
   const drawControlRef = useRef(null);
   const drawRef = useRef(null);
   const sideBySideRef = useRef(null);
+  const leftCompareLayerRef = useRef(null);
+  const rightCompareLayerRef = useRef(null);
 
   const startPolygonDraw = () => {
     if (customLayerName || hasStartedDraw) {
@@ -116,6 +118,7 @@ export default function Map() {
         transparent: true,
         version: "1.1.0",
         styles: dataset,
+        opacity: opacity,
       });
 
       const right = L.tileLayer.wms("http://127.0.0.1:8080/geoserver/resilientsenegal/wms?", {
@@ -124,11 +127,15 @@ export default function Map() {
         transparent: true,
         version: "1.1.0",
         styles: dataset,
-        
+        opacity: opacity,
       });
+
+      leftCompareLayerRef.current = left;
+      rightCompareLayerRef.current = right;
 
       left.addTo(map);
       right.addTo(map);
+
       const control = L.control.sideBySide(left, right).addTo(map);
       sideBySideRef.current = control;
     }, 300);
@@ -144,6 +151,9 @@ export default function Map() {
       sideBySideRef.current = null;
     }
 
+    leftCompareLayerRef.current = null;
+    rightCompareLayerRef.current = null;
+
     map.eachLayer((layer) => {
       const name = layer.options?.layers;
       if (name === defaultLayerName || name === ltmLayerName) {
@@ -158,45 +168,41 @@ export default function Map() {
     <>
       {/* Error Toast */}
       {errorMessage && (
-        <div
-          style={{
-            position: "absolute",
-            top: "60px",
-            left: "10px",
-            zIndex: 10000,
-            backgroundColor: "#d32f2f",
-            color: "#fff",
-            padding: "10px 16px",
-            borderRadius: "6px",
-            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)",
-            maxWidth: "320px",
-            fontSize: "14px",
-            lineHeight: "1.4",
-          }}
-        >
+        <div style={{
+          position: "absolute",
+          top: "60px",
+          left: "10px",
+          zIndex: 10000,
+          backgroundColor: "#d32f2f",
+          color: "#fff",
+          padding: "10px 16px",
+          borderRadius: "6px",
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)",
+          maxWidth: "320px",
+          fontSize: "14px",
+          lineHeight: "1.4",
+        }}>
           ⚠️ {errorMessage}
         </div>
       )}
 
       {/* Compare Banner */}
       {isComparing && (
-        <div
-          style={{
-            position: "absolute",
-            top: "10px",
-            left: "550px",
-            zIndex: 10000,
-            backgroundColor: "#ffffff",
-            border: "1px solid #ccc",
-            borderRadius: "6px",
-            padding: "6px 12px",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-            display: "flex",
-            gap: "12px",
-            fontWeight: 600,
-            fontSize: "13px",
-          }}
-        >
+        <div style={{
+          position: "absolute",
+          top: "10px",
+          left: "550px",
+          zIndex: 10000,
+          backgroundColor: "#ffffff",
+          border: "1px solid #ccc",
+          borderRadius: "6px",
+          padding: "6px 12px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+          display: "flex",
+          gap: "12px",
+          fontWeight: 600,
+          fontSize: "13px",
+        }}>
           <span style={{ color: "#2196f3" }}>
             ⬅️ {dataset} - {year}/{String(month).padStart(2, "0")}
           </span>
@@ -205,69 +211,57 @@ export default function Map() {
       )}
 
       {/* Draw Button */}
-      <button
-        onClick={startPolygonDraw}
-        style={{
-          position: "absolute",
-          zIndex: 10000,
-          top: "10px",
-          left: "10px",
-          padding: "6px 12px",
-          backgroundColor: "#ffffff",
-          color: "#000000",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          fontWeight: "500",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-        }}
-      >
-        {(customLayerName || hasStartedDraw)
-          ? "Reset to Original Layer"
-          : "Draw Polygon"}
+      <button onClick={startPolygonDraw} style={{
+        position: "absolute",
+        zIndex: 10000,
+        top: "10px",
+        left: "10px",
+        padding: "6px 12px",
+        backgroundColor: "#ffffff",
+        color: "#000000",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "500",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+      }}>
+        {(customLayerName || hasStartedDraw) ? "Reset to Original Layer" : "Draw Polygon"}
       </button>
 
       {/* Compare Button */}
-      <button
-        onClick={isComparing ? stopCompare : startCompare}
-        style={{
-          position: "absolute",
-          zIndex: 10000,
-          top: "50px",
-          left: "10px",
-          padding: "6px 12px",
-          backgroundColor: "#ffffff",
-          color: "#000000",
-          border: "none",
-          borderRadius: "6px",
-          cursor: "pointer",
-          fontWeight: "500",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-        }}
-      >
+      <button onClick={isComparing ? stopCompare : startCompare} style={{
+        position: "absolute",
+        zIndex: 10000,
+        top: "50px",
+        left: "10px",
+        padding: "6px 12px",
+        backgroundColor: "#ffffff",
+        color: "#000000",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer",
+        fontWeight: "500",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+      }}>
         {isComparing ? "Exit Compare" : "Compare Layers"}
       </button>
 
       {/* Opacity Slider */}
-      <div
-        style={{
-          position: "absolute",
-          zIndex: 10000,
-          top: "10px",
-          right: "224px",
-          backgroundColor: "#fff",
-          padding: "6px 8px",
-          borderRadius: "6px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          fontSize: "14px",
-        }}
-      >
-        <label htmlFor="opacityRange" style={{ fontWeight: 500 }}>
-          Opacity
-        </label>
+      <div style={{
+        position: "absolute",
+        zIndex: 10000,
+        top: "10px",
+        right: "224px",
+        backgroundColor: "#fff",
+        padding: "6px 8px",
+        borderRadius: "6px",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        fontSize: "14px",
+      }}>
+        <label htmlFor="opacityRange" style={{ fontWeight: 500 }}>Opacity</label>
         <input
           id="opacityRange"
           type="range"
@@ -275,7 +269,17 @@ export default function Map() {
           max="1"
           step="0.05"
           value={opacity}
-          onChange={(e) => setOpacity(parseFloat(e.target.value))}
+          onChange={(e) => {
+            const newOpacity = parseFloat(e.target.value);
+            setOpacity(newOpacity);
+
+            if (leftCompareLayerRef.current) {
+              leftCompareLayerRef.current.setOpacity(newOpacity);
+            }
+            if (rightCompareLayerRef.current) {
+              rightCompareLayerRef.current.setOpacity(newOpacity);
+            }
+          }}
         />
       </div>
 
