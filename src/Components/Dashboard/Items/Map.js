@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -44,7 +44,15 @@ export default function Map() {
   const leftCompareLayerRef = useRef(null);
   const rightCompareLayerRef = useRef(null);
 
+  const activeLayerName = customLayerName || defaultLayerName;
+
+  const showErrorToast = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => setErrorMessage(""), 4000);
+  };
+
   const startPolygonDraw = () => {
+    
     if (customLayerName || hasStartedDraw) {
       setCustomLayerName(null);
       setShowWMS(true);
@@ -52,8 +60,12 @@ export default function Map() {
       setHasStartedDraw(false);
       setCustomClassification(null);
       setcustomZoomGeoJSON(null);
-      if (drawRef.current) drawRef.current.clearLayers();
-    } else {
+      drawRef.current?.clearLayers();
+    } 
+    
+    else {
+      if (isComparing) stopCompare();
+      
       setShowWMS(false);
       setEnableDraw(true);
       setHasStartedDraw(true);
@@ -94,79 +106,85 @@ export default function Map() {
       setHasStartedDraw(false);
     }
 
-    if (drawRef.current) {
-      drawRef.current.clearLayers();
-      drawRef.current.addLayer(layer);
-    }
-  };
-
-  const showErrorToast = (message) => {
-    setErrorMessage(message);
-    setTimeout(() => setErrorMessage(""), 4000);
+    drawRef.current?.clearLayers();
+    drawRef.current?.addLayer(layer);
   };
 
   const startCompare = () => {
     setIsComparing(true);
     setShowWMS(false);
-
-    setTimeout(() => {
-      const map = featureGroupRef.current._map;
-
-      const left = L.tileLayer.wms("http://127.0.0.1:8080/geoserver/resilientsenegal/wms?", {
-        layers: defaultLayerName,
-        format: "image/png",
-        transparent: true,
-        version: "1.1.0",
-        styles: dataset,
-        opacity: opacity,
-      });
-
-      const right = L.tileLayer.wms("http://127.0.0.1:8080/geoserver/resilientsenegal/wms?", {
-        layers: ltmLayerName,
-        format: "image/png",
-        transparent: true,
-        version: "1.1.0",
-        styles: dataset,
-        opacity: opacity,
-      });
-
-      leftCompareLayerRef.current = left;
-      rightCompareLayerRef.current = right;
-
-      left.addTo(map);
-      right.addTo(map);
-
-      const control = L.control.sideBySide(left, right).addTo(map);
-      sideBySideRef.current = control;
-    }, 300);
   };
 
   const stopCompare = () => {
     setIsComparing(false);
     setShowWMS(true);
-
     const map = featureGroupRef.current._map;
+
     if (sideBySideRef.current) {
       sideBySideRef.current.remove();
       sideBySideRef.current = null;
     }
 
-    leftCompareLayerRef.current = null;
-    rightCompareLayerRef.current = null;
+    if (leftCompareLayerRef.current) {
+      map.removeLayer(leftCompareLayerRef.current);
+      leftCompareLayerRef.current = null;
+    }
 
-    map.eachLayer((layer) => {
-      const name = layer.options?.layers;
-      if (name === defaultLayerName || name === ltmLayerName) {
-        map.removeLayer(layer);
-      }
-    });
+    if (rightCompareLayerRef.current) {
+      map.removeLayer(rightCompareLayerRef.current);
+      rightCompareLayerRef.current = null;
+    }
   };
 
-  const activeLayerName = customLayerName || defaultLayerName;
+  useEffect(() => {
+    if (!isComparing || !featureGroupRef.current?._map) return;
+
+    const map = featureGroupRef.current._map;
+
+    // Clear previous layers
+    if (leftCompareLayerRef.current) {
+      map.removeLayer(leftCompareLayerRef.current);
+      leftCompareLayerRef.current = null;
+    }
+    if (rightCompareLayerRef.current) {
+      map.removeLayer(rightCompareLayerRef.current);
+      rightCompareLayerRef.current = null;
+    }
+    if (sideBySideRef.current) {
+      sideBySideRef.current.remove();
+      sideBySideRef.current = null;
+    }
+
+    const left = L.tileLayer.wms("http://127.0.0.1:8080/geoserver/resilientsenegal/wms?", {
+      layers: defaultLayerName,
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles: dataset,
+      opacity,
+    });
+
+    const right = L.tileLayer.wms("http://127.0.0.1:8080/geoserver/resilientsenegal/wms?", {
+      layers: ltmLayerName,
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles: dataset,
+      opacity,
+    });
+
+    leftCompareLayerRef.current = left;
+    rightCompareLayerRef.current = right;
+
+    left.addTo(map);
+    right.addTo(map);
+
+    sideBySideRef.current = L.control.sideBySide(left, right).addTo(map);
+  }, [defaultLayerName, ltmLayerName, dataset, opacity, isComparing]);
 
   return (
     <>
-      {/* Error Toast */}
+      {/* Toast */}
       {errorMessage && (
         <div style={{
           position: "absolute",
@@ -272,13 +290,8 @@ export default function Map() {
           onChange={(e) => {
             const newOpacity = parseFloat(e.target.value);
             setOpacity(newOpacity);
-
-            if (leftCompareLayerRef.current) {
-              leftCompareLayerRef.current.setOpacity(newOpacity);
-            }
-            if (rightCompareLayerRef.current) {
-              rightCompareLayerRef.current.setOpacity(newOpacity);
-            }
+            leftCompareLayerRef.current?.setOpacity(newOpacity);
+            rightCompareLayerRef.current?.setOpacity(newOpacity);
           }}
         />
       </div>
@@ -299,7 +312,7 @@ export default function Map() {
             url="http://127.0.0.1:8080/geoserver/resilientsenegal/wms?"
             layers={activeLayerName}
             format="image/png"
-            transparent={true}
+            transparent
             version="1.1.0"
             styles={dataset}
             srs="EPSG:4326"
