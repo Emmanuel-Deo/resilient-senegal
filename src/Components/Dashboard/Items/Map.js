@@ -24,8 +24,9 @@ export default function Map() {
     year,
     month,
     dataset,
-    filteredGeoJson,
-    setCustomClassification,
+    filteredGeoJson
+    ,isComparing, setIsComparing,
+     setCustomObsClassification, setCustomLtmClassification,
   } = useMapContext();
 
   const [customObsLayer, setCustomObsLayer] = useState(null);
@@ -36,7 +37,6 @@ export default function Map() {
   const [hasStartedDraw, setHasStartedDraw] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [opacity, setOpacity] = useState(1);
-  const [isComparing, setIsComparing] = useState(false);
 
   const featureGroupRef = useRef(null);
   const drawControlRef = useRef(null);
@@ -60,7 +60,7 @@ export default function Map() {
       setShowWMS(true);
       setEnableDraw(false);
       setHasStartedDraw(false);
-      setCustomClassification(null);
+      setCustomObsClassification(null);
       setcustomZoomGeoJSON(null);
       drawRef.current?.clearLayers();
     } else {
@@ -100,7 +100,8 @@ export default function Map() {
     if (result?.observation?.layer && result?.ltm?.layer) {
       setCustomObsLayer(result.observation.layer);
       setCustomLtmLayer(result.ltm.layer);
-      setCustomClassification(result.observation.classification);
+      setCustomObsClassification(result.observation.classification);
+      setCustomLtmClassification(result.ltm.classification);    
       setShowWMS(true);
       setEnableDraw(false);
       setHasStartedDraw(false);

@@ -6,6 +6,7 @@ import AdminSelectionBar from "./AdminSelectionBar";
 import ZoomControl from "./ZoomControl";
 import AnnualStats from "./AnnualStats";
 import MonthlyStats from "./MonthlyStats";
+import ComparisonPieChart from "./ComparisonPieChart";
 
 export default function InfoPanel() {
   
@@ -38,6 +39,7 @@ export default function InfoPanel() {
 
 <div style={{ width: "380px", height: "300px" , marginTop:'32px'}}>
   <AnnualStats />
+  <ComparisonPieChart/>
 </div>
 
     </div>

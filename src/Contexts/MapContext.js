@@ -9,7 +9,11 @@ export const MapProvider = ({ children }) => {
   const [selectedAdm3, setSelectedAdm3] = useState("");
 
   const [filteredGeoJson, setFilteredGeoJson] = useState(null);
-  const [customClassification, setCustomClassification] = useState(null);
+  const [isComparing, setIsComparing] = useState(false);
+  const [customObsClassification, setCustomObsClassification] = useState(null);
+  const [customLtmClassification, setCustomLtmClassification] = useState(null);
+
+
 
   const [selectedBasemap, setSelectedBasemap] = useState(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -75,11 +79,11 @@ export const MapProvider = ({ children }) => {
         setSelectedAdm3,
         filteredGeoJson,
         setFilteredGeoJson,
-        customClassification,
-        setCustomClassification,
+        customObsClassification, setCustomObsClassification,
+        customLtmClassification, setCustomLtmClassification,
         layerName,
         ltmLayerName,
-        layerKey,
+        layerKey,isComparing, setIsComparing,
       }}
     >
       {children}

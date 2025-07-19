@@ -5,13 +5,22 @@ import {
   Download,
   Printer,
   ChartPie,
-  LineChart,
-  BarChart2
+  LineChart
 } from "lucide-react";
 import MonthlyStats from "./MonthlyStats";
+import ComparisonPieChart from "./ComparisonPieChart";
 
 const MapInfoCard = () => {
-  const { aoi, year, setYear, month, setMonth, dataset } = useMapContext();
+  const {
+    aoi,
+    year,
+    setYear,
+    month,
+    setMonth,
+    dataset,
+    isComparing, // ← added from context
+  } = useMapContext();
+
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   return (
@@ -19,7 +28,7 @@ const MapInfoCard = () => {
       <div className="map-info-left">
         <div className="map-info-title">{aoi} {dataset} {year} {month}</div>
         <div className="map-info-chart">
-          <MonthlyStats />
+          {isComparing ? <ComparisonPieChart/> : <MonthlyStats />}
         </div>
       </div>
 
@@ -52,10 +61,10 @@ const MapInfoCard = () => {
       <div className="map-info-right">
         <div className="map-info-actions-title">Actions</div>
         <ul className="map-info-actions">
-          <li><Download size={16} /> Download</li>
-          <li><Printer size={16} /> Print</li>
-          <li><LineChart size={16} /> Time Stats</li>
-          <li><ChartPie size={16} /> Month Stats</li>
+          <li><Download size={16} /> </li>
+          <li><Printer size={16} /> </li>
+          <li><LineChart size={16} /> </li>
+          <li><ChartPie size={16} /> </li>
         </ul>
       </div>
     </div>

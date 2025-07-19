@@ -29,36 +29,6 @@ const colorMap = [
 ];
 
 
-// const ndviColorStops = [
-
-
-  
-//   { color: "#1a9641", label: "0.8557" },
-//   { color: "#52b151", label: "0.7270" },
-//   { color: "#95d165", label: "0.5726" },
-//   { color: "#cae88c", label: "0.4053" },
-//   { color: "#f8fcb9", label: "0.2380" },
-//   { color: "#fedb96", label: "0.0708" },
-//   { color: "#fdb165", label: "-0.0965" },
-//   { color: "#eb6640", label: "-0.2638" },
-//   { color: "#d7191c", label: "-0.4311" },
-// ];
-
-// categories = {
-//         "Class 1": (-1.0, -0.2638),
-//         "Class 2": (-0.2638, -0.0965),
-//         "Class 3": (-0.0965, 0.0708),
-//         "Class 4": (0.0708, 0.2380),
-//         "Class 5": (0.2380, 0.4053),
-//         "Class 6": (0.4053, 0.5726),
-//         "Class 7": (0.5726, 0.7270),
-//         "Class 8": (0.7270, 0.8557),
-//         "Class 9": (0.8557, 1.0),
-//     }
-
-
-
-
 
 const MonthlyStats = () => {
   const [statsData, setStatsData] = useState([]);
@@ -70,7 +40,8 @@ const MonthlyStats = () => {
     dataset,
     year,
     month,
-    customClassification, // ✅ from context
+    customObsClassification
+
   } = useMapContext();
 
   const tableName = `ADM1_FR_CLASS_${dataset}`;
@@ -78,7 +49,7 @@ const MonthlyStats = () => {
   useEffect(() => {
     const fetchStats = async () => {
       // Skip fetching if using custom polygon data
-      if (customClassification) return;
+      if (customObsClassification) return;
 
       setLoading(true);
       setError(null);
@@ -100,11 +71,11 @@ const MonthlyStats = () => {
     };
 
     fetchStats();
-  }, [selectedAdm1, dataset, year, month, customClassification]);
+  }, [selectedAdm1, dataset, year, month, customObsClassification]);
 
   // ✅ Use drawn polygon stats if available
-  const classData = customClassification
-    ? customClassification
+  const classData = customObsClassification
+    ? customObsClassification
     : statsData[0]?.[selectedAdm1] || {};
 
   const pieData = colorMap
@@ -115,9 +86,9 @@ const MonthlyStats = () => {
     }))
     .filter((item) => item.value > 0);
 
-  if (!customClassification && loading) return <p>Loading stats...</p>;
-  if (!customClassification && error) return <p>Error: {error}</p>;
-  if (!customClassification && (!statsData || statsData.length === 0))
+  if (!customObsClassification && loading) return <p>Loading stats...</p>;
+  if (!customObsClassification && error) return <p>Error: {error}</p>;
+  if (!customObsClassification && (!statsData || statsData.length === 0))
     return <p>No data available.</p>;
 
   return (
