@@ -62,7 +62,7 @@ export default function Sidebar() {
         </div>
       ))}
       <div className="summary">
-        {aoi}_{dataset}_{year}_{frequency}_{month}
+        {dataset}_{year}{month}_{aoi}
       </div>
     </div>
   );

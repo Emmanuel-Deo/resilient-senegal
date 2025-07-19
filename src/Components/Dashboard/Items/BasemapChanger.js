@@ -23,7 +23,7 @@ export default function BasemapChanger() {
   const { selectedBasemap, setSelectedBasemap } = useMapContext();
 
   return (
-    <div style={{ display: "flex", gap: "2px" ,position: 'relative' ,  borderRadius: "5px",}}>
+    <div style={{ display: "flex", gap: "4px" ,position: 'relative' ,  borderRadius: "8px",}}>
       {basemaps.map((base) => (
         <img
           key={base.name}
@@ -32,11 +32,11 @@ export default function BasemapChanger() {
           title={base.name}
           onClick={() => setSelectedBasemap(base.url)}
           style={{
-            width: 40,
-            height: 40,
+            width: 56,
+            height: 56,
             cursor: "pointer",
             border: selectedBasemap === base.url ? "2px solid #1976d2" : "2px solid transparent",
-            borderRadius: 5,
+            borderRadius: 8,
             transition: "border 0.2s",
           }}
         />

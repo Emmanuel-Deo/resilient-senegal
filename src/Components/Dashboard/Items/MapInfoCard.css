@@ -40,7 +40,7 @@
 .map-info-title {
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
 
 .map-info-chart {
@@ -48,14 +48,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 10px;
+  
+  /* width: 100px; */
+  height: 100px;
 }
 
-.dummy-chart {
-  width: 100px;
-  height: 100px;
-  background: conic-gradient(#80c565 44%, #d3d3d3 22%, #f4ca64 13%, #e97361 5%, #e94e3f 17%);
-  border-radius: 50%;
-}
+
 
 .map-info-slider {
   display: flex;

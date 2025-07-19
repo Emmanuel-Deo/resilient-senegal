@@ -7,6 +7,7 @@ import {
   ChartPie,
   LineChart
 } from "lucide-react";
+import MonthlyStats from "./MonthlyStats";
 
 const MapInfoCard = () => {
   const { aoi , year, setYear, month, setMonth, dataset } = useMapContext();
@@ -17,8 +18,8 @@ const MapInfoCard = () => {
       <div className="map-info-left">
         <div className="map-info-title">{aoi} {dataset} {year} {month}</div>
         <div className="map-info-chart">
-          <div className="dummy-chart"></div>
-        </div>
+            <MonthlyStats/>
+      </div>
       </div>
 
       <div className="map-info-center">

@@ -75,43 +75,49 @@ export default function AdminSelectionBar({ onGeoJsonChange }) {
     setSelectedAdm3("");
   }, [geoJsonData, selectedAdm1, selectedAdm2, setSelectedAdm3]);
 
-  // Build AOI name and update filtered GeoJSON
-  useEffect(() => {
-    let aoiName = "";
-    if (selectedAdm1) {
-      aoiName = selectedAdm1;
-      if (selectedAdm2) {
-        aoiName += `_${selectedAdm2}`;
-        if (selectedAdm3) {
-          aoiName += `_${selectedAdm3}`;
-        }
+
+// Build AOI name and update filtered GeoJSON
+useEffect(() => {
+  let parts = [];
+
+  if (selectedAdm1) {
+    parts.push(selectedAdm1);
+    if (selectedAdm2) {
+      parts.push(selectedAdm2);
+      if (selectedAdm3) {
+        parts.push(selectedAdm3);
       }
     }
+  }
 
-    if (aoiName) {
-      const formattedAoi = aoiName.replace(/\s+/g, "_");
-      setAoi(formattedAoi);
+  // Join parts with underscores
+  let aoiName = parts.join("_");
+
+  // Replace spaces with hyphens
+  const formattedAoi = aoiName.replace(/\s+/g, "-");
+  setAoi(formattedAoi);
+
+  if (geoJsonData) {
+    const filteredFeatures = geoJsonData.features.filter(f => {
+      return (
+        (!selectedAdm1 || f.properties.ADM1_FR === selectedAdm1) &&
+        (!selectedAdm2 || f.properties.ADM2_FR === selectedAdm2) &&
+        (!selectedAdm3 || f.properties.ADM3_FR === selectedAdm3)
+      );
+    });
+
+    const filteredGeoJson = {
+      type: "FeatureCollection",
+      features: filteredFeatures,
+    };
+
+    if (onGeoJsonChange) {
+      onGeoJsonChange(filteredGeoJson);
     }
+  }
+}, [selectedAdm1, selectedAdm2, selectedAdm3, geoJsonData, setAoi, onGeoJsonChange]);
 
-    if (geoJsonData) {
-      const filteredFeatures = geoJsonData.features.filter(f => {
-        return (
-          (!selectedAdm1 || f.properties.ADM1_FR === selectedAdm1) &&
-          (!selectedAdm2 || f.properties.ADM2_FR === selectedAdm2) &&
-          (!selectedAdm3 || f.properties.ADM3_FR === selectedAdm3)
-        );
-      });
 
-      const filteredGeoJson = {
-        type: "FeatureCollection",
-        features: filteredFeatures,
-      };
-
-      if (onGeoJsonChange) {
-        onGeoJsonChange(filteredGeoJson);
-      }
-    }
-  }, [selectedAdm1, selectedAdm2, selectedAdm3, geoJsonData, setAoi, onGeoJsonChange]);
 
   return (
     <div className="admin-selection-bar">

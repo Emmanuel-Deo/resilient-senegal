@@ -4,6 +4,7 @@ import Map from "./Items/Map";
 import BasemapChanger from "./Items/BasemapChanger";
 import Legend from "./Items/Legend";
 import MapInfoCard from "./Items/MapInfoCard";
+import ZoomControl from "./Items/ZoomControl";
 
 export default function MapPanel() {
   return (
@@ -11,7 +12,6 @@ export default function MapPanel() {
       <Map />
       <div className="overlay-item bamaps-overlay"><BasemapChanger /></div>
       <div className="overlay-item legend-overlay"><Legend /></div>
-      {/* Updated: explicitly wrap the info card in overlay-item class for consistency */}
       <div className="overlay-item infocard-overlay">
         <MapInfoCard />
       </div>
