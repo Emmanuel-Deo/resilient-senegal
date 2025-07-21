@@ -31,6 +31,7 @@ export default function Map() {
     setCustomObsClassification,
     customLtmClassification, 
     setCustomLtmClassification,
+    setServerResponse,
   } = useMapContext();
 
   const [customObsLayers, setCustomObsLayers] = useState([]);
@@ -96,6 +97,7 @@ export default function Map() {
     }
   };
 
+
   const handleDrawCreate = async (e) => {
     const layer = e.layer;
     const drawnGeoJSON = layer.toGeoJSON();
@@ -118,6 +120,8 @@ export default function Map() {
         startPolygonDraw();
         return;
       }
+
+      setServerResponse(result)
 
       if (result?.observationResults.length > 0 && result?.ltmResults.length > 0) {
         setCustomObsLayers(result.observationResults);
@@ -227,7 +231,7 @@ export default function Map() {
     right.addTo(map);
 
     sideBySideRef.current = L.control.sideBySide(left, right).addTo(map);
-  }, [activeLayerName, activeLtmLayerName, dataset, opacity, isComparing]);
+  }, [activeLayerName, activeLtmLayerName, dataset, opacity, isComparing, year,  month]);
 
   return (
     <>

@@ -15,7 +15,7 @@ export const MapProvider = ({ children }) => {
     const [activeLayerName, setActiveLayerName] = useState(null);
   const [activeLtmLayerName, setActiveLtmLayerName] = useState(null);
 
-
+  const [serverResponse, setServerResponse] = useState(null)
 
   const [selectedBasemap, setSelectedBasemap] = useState(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -86,6 +86,7 @@ export const MapProvider = ({ children }) => {
         layerName,
         ltmLayerName,
         layerKey,isComparing, setIsComparing,
+        serverResponse, setServerResponse,
 
 
         activeLayerName,

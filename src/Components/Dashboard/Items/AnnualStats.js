@@ -12,15 +12,27 @@ const AnnualStats = () => {
   const [statsData, setStatsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const { selectedAdm1, selectedAdm2, selectedAdm3, dataset, year } = useMapContext();
+  
+  const { selectedAdm1, selectedAdm2, selectedAdm3, dataset, year, serverResponse } = useMapContext();
 
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
       setError(null);
 
-      // Dynamic table and column names for observed data
+      // Use serverResponse if available
+      if (serverResponse && serverResponse.annualCombined) {
+        const combinedData = serverResponse.annualCombined.map(item => ({
+          month: item.month,
+          observed: parseFloat(item.observed),
+          ltm: parseFloat(item.ltm),
+        }));
+        setStatsData(combinedData);
+        setLoading(false); // Set loading to false since data is already available
+        return;
+      }
+
+      // If serverResponse is not available, fetch from Supabase
       let dynamicTableName = `ADM0_FR_${dataset}_OBSERVATION`;
       let dynamicColumnName = "Senegal";
 
@@ -73,7 +85,7 @@ const AnnualStats = () => {
     };
 
     fetchStats();
-  }, [selectedAdm1, selectedAdm2, selectedAdm3, dataset, year]);
+  }, [selectedAdm1, selectedAdm2, selectedAdm3, dataset, year, serverResponse]);
 
   if (loading) return <p>Loading stats...</p>;
   if (error) return <p>Error: {error}</p>;

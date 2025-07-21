@@ -21,15 +21,19 @@ export const handlePolygonDraw = async ({ drawnGeoJSON, backendURL, year, datase
 
     return {
       observationResults: data.observation_results.map(result => ({
+        month: result.month,
         layer: result.geoserver_layer,
         classification: result.classification,
-        month: result.month,
+        
       })),
       ltmResults: data.ltm_results.map(result => ({
+        month: result.month,
         layer: result.geoserver_layer,
         classification: result.classification,
-        month: result.month,
+        
       })),
+
+      annualCombined : data.annual_combined_means
 
       
     };
