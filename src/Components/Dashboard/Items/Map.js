@@ -49,7 +49,7 @@ export default function Map() {
   const leftCompareLayerRef = useRef(null);
   const rightCompareLayerRef = useRef(null);
 
-  // ✅ Always return a valid WMS layer
+  // Get active layer based on month
   const getActiveLayerName = () => {
     const layer = customObsLayers.find((l) => l.month === month);
     return (
@@ -71,6 +71,7 @@ export default function Map() {
   const activeLayerName = getActiveLayerName();
   const activeLtmLayerName = getActiveLtmLayerName();
 
+  // Error handling
   const showErrorToast = (message) => {
     setErrorMessage(message);
     setTimeout(() => setErrorMessage(""), 4000);
@@ -122,12 +123,9 @@ export default function Map() {
         setCustomObsLayers(result.observationResults);
         setCustomLtmLayers(result.ltmResults);
 
-        const obs = result.observationResults.find((l) => l.month === month);
-        const ltm = result.ltmResults.find((l) => l.month === month);
-
-        setCustomObsClassification(obs?.classification || result.observationResults[0]?.classification || null);
-        setCustomLtmClassification(ltm?.classification || result.ltmResults[0]?.classification || null);
-
+        // Set active custom classifications based on the current month
+        updateCustomStats(result.observationResults, result.ltmResults);
+        
         setShowWMS(true);
         setEnableDraw(false);
         setHasStartedDraw(false);
@@ -142,7 +140,23 @@ export default function Map() {
     }
   };
 
-  // ✅ Fallback to default layers if no polygon drawn
+  // Function to update custom statistics when month changes
+  const updateCustomStats = (obsResults, ltmResults) => {
+    const obs = obsResults.find((l) => l.month === month);
+    const ltm = ltmResults.find((l) => l.month === month);
+    
+    setCustomObsClassification(obs?.classification || obsResults[0]?.classification || null);
+    setCustomLtmClassification(ltm?.classification || ltmResults[0]?.classification || null);
+  };
+
+  // Watch for month changes and update stats accordingly
+  useEffect(() => {
+    if (customObsLayers.length > 0 && customLtmLayers.length > 0) {
+      updateCustomStats(customObsLayers, customLtmLayers);
+    }
+  }, [month, customObsLayers, customLtmLayers]);
+
+  // Fallback for default layers if no polygon drawn
   useEffect(() => {
     if (!customObsLayers.length) {
       setCustomObsClassification(null);
@@ -178,7 +192,7 @@ export default function Map() {
     }
   };
 
-  // ✅ Compare mode: update WMS layers
+  // Compare mode: update WMS layers
   useEffect(() => {
     if (!isComparing || !featureGroupRef.current?._map) return;
 
