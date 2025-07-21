@@ -24,13 +24,17 @@ export default function Map() {
     year,
     month,
     dataset,
-    filteredGeoJson
-    ,isComparing, setIsComparing,
-     setCustomObsClassification, setCustomLtmClassification,
+    filteredGeoJson,
+    isComparing, 
+    setIsComparing,
+    customObsClassification, 
+    setCustomObsClassification,
+    customLtmClassification, 
+    setCustomLtmClassification,
   } = useMapContext();
 
-  const [customObsLayer, setCustomObsLayer] = useState(null);
-  const [customLtmLayer, setCustomLtmLayer] = useState(null);
+  const [customObsLayers, setCustomObsLayers] = useState([]);
+  const [customLtmLayers, setCustomLtmLayers] = useState([]);
   const [customZoomGeoJSON, setcustomZoomGeoJSON] = useState(null);
   const [showWMS, setShowWMS] = useState(true);
   const [enableDraw, setEnableDraw] = useState(false);
@@ -45,8 +49,18 @@ export default function Map() {
   const leftCompareLayerRef = useRef(null);
   const rightCompareLayerRef = useRef(null);
 
-  const activeLayerName = customObsLayer || defaultLayerName;
-  const activeLtmLayerName = customLtmLayer || ltmLayerName;
+  const getActiveLayerName = () => {
+    const layer = customObsLayers.find(l => l.month === month);
+    return layer ? layer.layer : defaultLayerName;
+  };
+
+  const getActiveLtmLayerName = () => {
+    const layer = customLtmLayers.find(l => l.month === month);
+    return layer ? layer.layer : ltmLayerName;
+  };
+
+  const activeLayerName = getActiveLayerName();
+  const activeLtmLayerName = getActiveLtmLayerName();
 
   const showErrorToast = (message) => {
     setErrorMessage(message);
@@ -54,14 +68,12 @@ export default function Map() {
   };
 
   const startPolygonDraw = () => {
-    if (customObsLayer || hasStartedDraw) {
-      setCustomObsLayer(null);
-      setCustomLtmLayer(null);
+    if (customObsLayers.length || hasStartedDraw) {
+      setCustomObsLayers([]);
+      setCustomLtmLayers([]);
       setShowWMS(true);
       setEnableDraw(false);
       setHasStartedDraw(false);
-      setCustomObsClassification(null);
-      setcustomZoomGeoJSON(null);
       drawRef.current?.clearLayers();
     } else {
       if (isComparing) stopCompare();
@@ -83,33 +95,47 @@ export default function Map() {
     };
     setcustomZoomGeoJSON(customZoomGeoJSON);
 
-    const result = await handlePolygonDraw({
-      drawnGeoJSON,
-      backendURL: "http://127.0.0.1:8000",
-      year,
-      month,
-      dataset,
-    });
+    try {
+      const result = await handlePolygonDraw({
+        drawnGeoJSON,
+        backendURL: "http://127.0.0.1:8000",
+        year,
+        dataset,
+      });
 
-    if (result?.error) {
-      showErrorToast(result.error);
+      console.log('backend Response:', result);
+
+      if (result?.error) {
+        showErrorToast(result.error);
+        startPolygonDraw();
+        return;
+      }
+
+      if (result?.observationResults.length > 0 && result?.ltmResults.length > 0) {
+        setCustomObsLayers(result.observationResults);
+        setCustomLtmLayers(result.ltmResults);
+        setCustomObsClassification(result.observationResults.find(l => l.month === month)?.classification);
+        setCustomLtmClassification(result.ltmResults.find(l => l.month === month)?.classification);    
+        setShowWMS(true);
+        setEnableDraw(false);
+        setHasStartedDraw(false);
+      }
+
+      drawRef.current?.clearLayers();
+      drawRef.current?.addLayer(layer);
+    } catch (error) {
+      console.error("Error during polygon draw:", error);
+      showErrorToast("An error occurred while processing the polygon.");
       startPolygonDraw();
-      return;
     }
-
-    if (result?.observation?.layer && result?.ltm?.layer) {
-      setCustomObsLayer(result.observation.layer);
-      setCustomLtmLayer(result.ltm.layer);
-      setCustomObsClassification(result.observation.classification);
-      setCustomLtmClassification(result.ltm.classification);    
-      setShowWMS(true);
-      setEnableDraw(false);
-      setHasStartedDraw(false);
-    }
-
-    drawRef.current?.clearLayers();
-    drawRef.current?.addLayer(layer);
   };
+
+  useEffect(() => {
+    console.log('Updated customObsLayers:', customObsLayers);
+    console.log('Updated customLtmLayers:', customLtmLayers);
+    console.log('Updated customObsClassification:', customObsClassification);
+    console.log('Updated customLtmClassification:', customLtmClassification);
+  }, [customObsLayers, customLtmLayers, customObsClassification, customLtmClassification]);
 
   const startCompare = () => {
     setIsComparing(true);
@@ -194,7 +220,7 @@ export default function Map() {
           display: "flex", gap: "12px", fontWeight: 600, fontSize: "13px",
         }}>
           <span style={{ color: "#2196f3" }}>
-            ⬅️ {dataset} - {year}/{String(month).padStart(2, "0")}
+            ⬅️ {dataset} - {year}
           </span>
           <span style={{ color: "#7d7d7dff", fontSize: "18px" }}>|</span>
           <span style={{ color: "#f44336" }}>{dataset} - LTM ➡️ </span>
@@ -207,7 +233,7 @@ export default function Map() {
         border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500",
         boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
       }}>
-        {(customObsLayer || hasStartedDraw) ? "Clear Polygon" : "Draw Polygon"}
+        {(customObsLayers.length || hasStartedDraw) ? "Clear Polygon" : "Draw Polygon"}
       </button>
 
       <button onClick={isComparing ? stopCompare : startCompare} style={{
@@ -294,9 +320,6 @@ export default function Map() {
                     color: "#2196f3",
                     weight: 2,
                     fill: false,
-                    // opacity: 0.7,
-                    // fillOpacity: 0.3,
-                    // fillColor: "#2196f3",
                     dashArray: "3",
                     lineCap: "round",
                     lineJoin: "round",

@@ -15,6 +15,7 @@ const supabaseKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5amJrenh0c3hicHdqbWJ2aWxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAyNDgzMzYsImV4cCI6MjA1NTgyNDMzNn0.7leWFkGhmI8Wo71P87K7xsNGJAmTRQ7mIeL_FO6wzx0";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+
 // NDVI color map
 const colorMap = [
   { className: "Class 9", color: "#1a9641" },
@@ -28,8 +29,6 @@ const colorMap = [
   { className: "Class 1", color: "#d7191c" },
 ];
 
-
-
 const MonthlyStats = () => {
   const [statsData, setStatsData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,8 +39,7 @@ const MonthlyStats = () => {
     dataset,
     year,
     month,
-    customObsClassification
-
+    customObsClassification,
   } = useMapContext();
 
   const tableName = `ADM1_FR_CLASS_${dataset}`;
@@ -73,10 +71,8 @@ const MonthlyStats = () => {
     fetchStats();
   }, [selectedAdm1, dataset, year, month, customObsClassification]);
 
-  // ✅ Use drawn polygon stats if available
-  const classData = customObsClassification
-    ? customObsClassification
-    : statsData[0]?.[selectedAdm1] || {};
+  // Use custom classification if available
+  const classData = customObsClassification || statsData[0]?.[selectedAdm1] || {};
 
   const pieData = colorMap
     .map((item) => ({
