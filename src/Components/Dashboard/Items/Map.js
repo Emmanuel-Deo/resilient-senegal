@@ -49,14 +49,23 @@ export default function Map() {
   const leftCompareLayerRef = useRef(null);
   const rightCompareLayerRef = useRef(null);
 
+  // ✅ Always return a valid WMS layer
   const getActiveLayerName = () => {
-    const layer = customObsLayers.find(l => l.month === month);
-    return layer ? layer.layer : defaultLayerName;
+    const layer = customObsLayers.find((l) => l.month === month);
+    return (
+      layer?.layer ||
+      customObsLayers[0]?.layer ||
+      defaultLayerName
+    );
   };
 
   const getActiveLtmLayerName = () => {
-    const layer = customLtmLayers.find(l => l.month === month);
-    return layer ? layer.layer : ltmLayerName;
+    const layer = customLtmLayers.find((l) => l.month === month);
+    return (
+      layer?.layer ||
+      customLtmLayers[0]?.layer ||
+      ltmLayerName
+    );
   };
 
   const activeLayerName = getActiveLayerName();
@@ -103,8 +112,6 @@ export default function Map() {
         dataset,
       });
 
-      console.log('backend Response:', result);
-
       if (result?.error) {
         showErrorToast(result.error);
         startPolygonDraw();
@@ -114,8 +121,13 @@ export default function Map() {
       if (result?.observationResults.length > 0 && result?.ltmResults.length > 0) {
         setCustomObsLayers(result.observationResults);
         setCustomLtmLayers(result.ltmResults);
-        setCustomObsClassification(result.observationResults.find(l => l.month === month)?.classification);
-        setCustomLtmClassification(result.ltmResults.find(l => l.month === month)?.classification);    
+
+        const obs = result.observationResults.find((l) => l.month === month);
+        const ltm = result.ltmResults.find((l) => l.month === month);
+
+        setCustomObsClassification(obs?.classification || result.observationResults[0]?.classification || null);
+        setCustomLtmClassification(ltm?.classification || result.ltmResults[0]?.classification || null);
+
         setShowWMS(true);
         setEnableDraw(false);
         setHasStartedDraw(false);
@@ -130,12 +142,15 @@ export default function Map() {
     }
   };
 
+  // ✅ Fallback to default layers if no polygon drawn
   useEffect(() => {
-    console.log('Updated customObsLayers:', customObsLayers);
-    console.log('Updated customLtmLayers:', customLtmLayers);
-    console.log('Updated customObsClassification:', customObsClassification);
-    console.log('Updated customLtmClassification:', customLtmClassification);
-  }, [customObsLayers, customLtmLayers, customObsClassification, customLtmClassification]);
+    if (!customObsLayers.length) {
+      setCustomObsClassification(null);
+    }
+    if (!customLtmLayers.length) {
+      setCustomLtmClassification(null);
+    }
+  }, [customObsLayers, customLtmLayers]);
 
   const startCompare = () => {
     setIsComparing(true);
@@ -163,6 +178,7 @@ export default function Map() {
     }
   };
 
+  // ✅ Compare mode: update WMS layers
   useEffect(() => {
     if (!isComparing || !featureGroupRef.current?._map) return;
 
@@ -201,73 +217,43 @@ export default function Map() {
 
   return (
     <>
+      {/* Toast */}
       {errorMessage && (
-        <div style={{
-          position: "absolute", top: "60px", left: "10px", zIndex: 10000,
-          backgroundColor: "#d32f2f", color: "#fff", padding: "10px 16px",
-          borderRadius: "6px", boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)",
-          maxWidth: "320px", fontSize: "14px", lineHeight: "1.4",
-        }}>
+        <div style={{ position: "absolute", top: "60px", left: "10px", zIndex: 10000, backgroundColor: "#d32f2f", color: "#fff", padding: "10px 16px", borderRadius: "6px", boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)", maxWidth: "320px", fontSize: "14px", lineHeight: "1.4" }}>
           ⚠️ {errorMessage}
         </div>
       )}
 
+      {/* Compare Legend */}
       {isComparing && (
-        <div style={{
-          position: "absolute", top: "10px", left: "550px", zIndex: 10000,
-          backgroundColor: "#ffffff", border: "1px solid #ccc", borderRadius: "6px",
-          padding: "6px 12px", boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-          display: "flex", gap: "12px", fontWeight: 600, fontSize: "13px",
-        }}>
-          <span style={{ color: "#2196f3" }}>
-            ⬅️ {dataset} - {year}
-          </span>
+        <div style={{ position: "absolute", top: "10px", left: "550px", zIndex: 10000, backgroundColor: "#ffffff", border: "1px solid #ccc", borderRadius: "6px", padding: "6px 12px", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", display: "flex", gap: "12px", fontWeight: 600, fontSize: "13px" }}>
+          <span style={{ color: "#2196f3" }}>⬅️ {dataset} - {year}</span>
           <span style={{ color: "#7d7d7dff", fontSize: "18px" }}>|</span>
-          <span style={{ color: "#f44336" }}>{dataset} - LTM ➡️ </span>
+          <span style={{ color: "#f44336" }}>{dataset} - LTM ➡️</span>
         </div>
       )}
 
-      <button onClick={startPolygonDraw} style={{
-        position: "absolute", zIndex: 10000, top: "10px", left: "10px",
-        padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000",
-        border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-      }}>
+      {/* Draw & Compare Buttons */}
+      <button onClick={startPolygonDraw} style={{ position: "absolute", zIndex: 10000, top: "10px", left: "10px", padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500", boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>
         {(customObsLayers.length || hasStartedDraw) ? "Clear Polygon" : "Draw Polygon"}
       </button>
 
-      <button onClick={isComparing ? stopCompare : startCompare} style={{
-        position: "absolute", zIndex: 10000, top: "10px", left: "124px",
-        padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000",
-        border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-      }}>
+      <button onClick={isComparing ? stopCompare : startCompare} style={{ position: "absolute", zIndex: 10000, top: "10px", left: "124px", padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500", boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>
         {isComparing ? "Exit Compare" : "Start Compare"}
       </button>
 
-      <div style={{
-        position: "absolute", zIndex: 10000, top: "10px", right: "224px",
-        backgroundColor: "#fff", padding: "6px 8px", borderRadius: "6px",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.2)", display: "flex",
-        alignItems: "center", gap: "8px", fontSize: "14px",
-      }}>
+      {/* Opacity Control */}
+      <div style={{ position: "absolute", zIndex: 10000, top: "10px", right: "224px", backgroundColor: "#fff", padding: "6px 8px", borderRadius: "6px", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", display: "flex", alignItems: "center", gap: "8px", fontSize: "14px" }}>
         <label htmlFor="opacityRange" style={{ fontWeight: 500 }}>Opacity</label>
-        <input
-          id="opacityRange"
-          type="range"
-          min="0"
-          max="1"
-          step="0.05"
-          value={opacity}
-          onChange={(e) => {
-            const newOpacity = parseFloat(e.target.value);
-            setOpacity(newOpacity);
-            leftCompareLayerRef.current?.setOpacity(newOpacity);
-            rightCompareLayerRef.current?.setOpacity(newOpacity);
-          }}
-        />
+        <input id="opacityRange" type="range" min="0" max="1" step="0.05" value={opacity} onChange={(e) => {
+          const newOpacity = parseFloat(e.target.value);
+          setOpacity(newOpacity);
+          leftCompareLayerRef.current?.setOpacity(newOpacity);
+          rightCompareLayerRef.current?.setOpacity(newOpacity);
+        }} />
       </div>
 
+      {/* Map */}
       <MapContainer
         zoomControl={false}
         center={[13.795625802430228, -14.556901049379832]}
@@ -277,7 +263,6 @@ export default function Map() {
       >
         <ZoomToGeoJSONBounds data={customZoomGeoJSON || filteredGeoJson} />
         <TileLayer url={selectedBasemap} />
-
         {showWMS && activeLayerName && (
           <WMSTileLayer
             key={activeLayerName}

@@ -12,6 +12,8 @@ export const MapProvider = ({ children }) => {
   const [isComparing, setIsComparing] = useState(false);
   const [customObsClassification, setCustomObsClassification] = useState(null);
   const [customLtmClassification, setCustomLtmClassification] = useState(null);
+    const [activeLayerName, setActiveLayerName] = useState(null);
+  const [activeLtmLayerName, setActiveLtmLayerName] = useState(null);
 
 
 
@@ -84,6 +86,12 @@ export const MapProvider = ({ children }) => {
         layerName,
         ltmLayerName,
         layerKey,isComparing, setIsComparing,
+
+
+        activeLayerName,
+        setActiveLayerName,
+        activeLtmLayerName,
+        setActiveLtmLayerName,
       }}
     >
       {children}
