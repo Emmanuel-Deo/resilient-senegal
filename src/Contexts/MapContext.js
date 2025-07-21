@@ -20,9 +20,9 @@ export const MapProvider = ({ children }) => {
   );
   const [dataset, setDataset] = useState("NDVI");
   const [aoi, setAoi] = useState("Senegal");
-  const [month, setMonth] = useState("3");
-  const [year, setYear] = useState("2000");
-  const [zoomLevel, setZoomLevel] = useState("7");
+  const [month, setMonth] = useState("8");
+  const [year, setYear] = useState("2020");
+  const [zoomLevel, setZoomLevel] = useState("8");
   const [frequency, setFrequency] = useState("monthly");
 
   const sanitize = (str) =>

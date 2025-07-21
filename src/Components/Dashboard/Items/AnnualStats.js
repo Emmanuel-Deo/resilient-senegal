@@ -24,17 +24,17 @@ const AnnualStats = () => {
     setError(null);
 
     // Dynamic table and column names
-    let dynamicTableName = `ADM0_FR_${dataset}`;
+    let dynamicTableName = `ADM0_FR_${dataset}_OBSERVATION`;
     let dynamicColumnName = "Senegal";
 
     if (selectedAdm3) {
-      dynamicTableName = `ADM3_FR_${dataset}`;
+      dynamicTableName = `ADM3_FR_${dataset}_OBSERVATION`;
       dynamicColumnName = selectedAdm3;
     } else if (selectedAdm2) {
-      dynamicTableName = `ADM2_FR_${dataset}`;
+      dynamicTableName = `ADM2_FR_${dataset}_OBSERVATION`;
       dynamicColumnName = selectedAdm2;
     } else if (selectedAdm1) {
-      dynamicTableName = `ADM1_FR_${dataset}`;
+      dynamicTableName = `ADM1_FR_${dataset}_OBSERVATION`;
       dynamicColumnName = selectedAdm1;
     }
 
@@ -86,3 +86,6 @@ const AnnualStats = () => {
 };
 
 export default AnnualStats;
+
+
+

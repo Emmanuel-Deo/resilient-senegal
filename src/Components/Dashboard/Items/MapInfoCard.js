@@ -26,7 +26,7 @@ const MapInfoCard = () => {
   return (
     <div className="map-info-card">
       <div className="map-info-left">
-        <div className="map-info-title">{aoi} {dataset} {year} {month}</div>
+        {/* <div className="map-info-title">{aoi} {dataset} {year} {month}</div> */}
         <div className="map-info-chart">
           {isComparing ? <ComparisonPieChart/> : <MonthlyStats />}
         </div>
