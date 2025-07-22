@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useMapContext } from "../../../Contexts/MapContext";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } from 'recharts';
 
 // Supabase setup
 const supabaseUrl = "https://gyjbkzxtsxbpwjmbvilm.supabase.co";
@@ -13,7 +13,7 @@ const AnnualStats = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  const { selectedAdm1, selectedAdm2, selectedAdm3, dataset, year, serverResponse } = useMapContext();
+  const { selectedAdm1, selectedAdm2, selectedAdm3, dataset, year, month, serverResponse } = useMapContext();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -99,6 +99,8 @@ const AnnualStats = () => {
         <YAxis tick={{ fontSize: 10 }} />
         <Tooltip contentStyle={{ fontSize: 10 }} />
         <Legend wrapperStyle={{ fontSize: 10 }} />
+         <ReferenceLine x={month} label="Selected Month" stroke="red" strokeDasharray="3 3" strokeWidth={3}/>
+      
         <Line type="monotone" dataKey="observed" stroke="#82ca9d" strokeWidth={2} name="Observed" />
         <Line type="monotone" dataKey="ltm" stroke="#ff7300" strokeWidth={2} name="LTM" />
       </LineChart>

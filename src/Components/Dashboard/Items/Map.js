@@ -43,6 +43,19 @@ export default function Map() {
   const [errorMessage, setErrorMessage] = useState("");
   const [opacity, setOpacity] = useState(1);
 
+
+
+
+
+  useEffect(() => {
+  // Clear previous results and polygon data when year changes
+  setServerResponse(null);
+  setCustomObsLayers([]);
+  setCustomLtmLayers([]);
+  setcustomZoomGeoJSON(null);
+  drawRef.current?.clearLayers();
+}, [year]);
+
   const featureGroupRef = useRef(null);
   const drawControlRef = useRef(null);
   const drawRef = useRef(null);
