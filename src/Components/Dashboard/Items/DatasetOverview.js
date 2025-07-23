@@ -16,11 +16,11 @@ export default function DatasetOverview({ selectedDataset, year, setYear }) {
   const data = datasetDescriptions[selectedDataset];
 
   return (
-    <div style={{ paddingTop: '32px', }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 
         {/* Left: Monthly Trend Title */}
-        <div style={{ fontSize: '1rem', fontWeight: '600', color: 'green', textAlign: 'center' }}> 
+        <div style={{ fontSize: '1rem', fontWeight: '600',  color: '#1a4f8b', textAlign: 'center' }}> 
           {selectedDataset} Monthly Trend for the Year {year} 
         </div>
        
@@ -28,7 +28,7 @@ export default function DatasetOverview({ selectedDataset, year, setYear }) {
         {/* <span style={{ fontSize: '0.95rem', fontWeight: '500', color: 'blue', alignItems: 'center' }}>
           {year}
         </span> */}
-        <YearSelector year={year} setYear={setYear} />
+        {/* <YearSelector year={year} setYear={setYear} /> */}
       </div>
     </div>
   );

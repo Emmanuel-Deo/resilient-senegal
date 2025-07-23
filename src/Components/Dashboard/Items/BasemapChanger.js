@@ -24,6 +24,7 @@ export default function BasemapChanger() {
 
   return (
     <div
+      
       style={{
         display: "flex",
         gap: "6px",
@@ -31,6 +32,7 @@ export default function BasemapChanger() {
         padding: "6px",
         borderRadius: "8px",
         background: "rgba(255,255,255)",
+        
       }}
     >
       {basemaps.map((base) => (

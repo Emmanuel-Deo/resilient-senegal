@@ -19,9 +19,10 @@ export default function InfoPanel() {
   return (
     
     <div className="info-panel">
-      <DatasetIndicator selectedDataset = {dataset}/>
-
-      <AdminSelectionBar onGeoJsonChange={setFilteredGeoJson} />
+      <DatasetIndicator selectedDataset = {dataset}
+      />
+    <div className = "dataset-container">
+        <AdminSelectionBar onGeoJsonChange={setFilteredGeoJson} />
 
       <AOIPreview
         selectedAdm1={selectedAdm1}
@@ -29,20 +30,15 @@ export default function InfoPanel() {
         selectedAdm3={selectedAdm3}
         geoJsonData={filteredGeoJson}
       />
-
-          <div>
-      {/* <YearSelector /> */}
-    </div>
-
-
+    </div >
+  
+    <div className = "dataset-container">
       <DatasetOverview selectedDataset={dataset} year={year} />
 
-      <div style={{ width: "380px", height: "300px" , marginTop:'32px'}}>
+         <div style={{ width: "380px", height: "300px" , marginTop:'16px'}}>
         <AnnualStats />
-        {/* <TaskProgress/> */}
       </div>
-
-      <ChartDescription
+        <ChartDescription
         year={year}
         dataset={dataset}
         selectedAdm0={selectedAdm0}
@@ -50,6 +46,12 @@ export default function InfoPanel() {
         selectedAdm2={selectedAdm2}
         selectedAdm3={selectedAdm3}
       />
+
+    </div>
+
+   
+
+    
 
 
     </div>

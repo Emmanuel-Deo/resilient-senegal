@@ -25,8 +25,8 @@ export default function ChartDescription({
   const location = locationParts.length > 0 ? locationParts.join(', ') : 'the selected area';
 
   return (
-    <div style={{ padding: '1rem', background: '#f9f9f9', borderRadius: '8px', border: '1px solid #ddd', color: '#333' }}>
-      <p style={{ fontSize: 14, lineHeight: '1.6' }}>
+    <div   >
+      <p style={{ fontSize: 15, lineHeight: '1.6', color: '#444'}}>
         This chart displays the <strong>monthly mean values</strong> for <strong>{title}</strong> in <strong>{year}</strong>,
         compared against the <strong>Long-Term Mean (LTM)</strong> from <strong>2001 to 2020</strong> for <strong>{location}</strong>.
         It provides insight into how the selected year’s monthly behavior compares with the historical baseline.

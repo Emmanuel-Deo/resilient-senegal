@@ -1,11 +1,12 @@
 .sidebar {
-  width: 260px;
+  /* width: 260px; */
   background: #f9fafb;
   border-right: 1px solid #e5e7eb;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   overflow-y: auto;
   padding-bottom: 16px;
   box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
+
 }
 
 .accordion-group {
@@ -37,7 +38,7 @@
 
 .accordion-body {
   margin: 0 10px 10px;
-  display: block; /* Always show */
+  display: block; 
 }
 
 .item-btn {

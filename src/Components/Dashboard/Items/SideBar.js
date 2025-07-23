@@ -39,7 +39,7 @@ export default function Sidebar() {
   const { dataset, setDataset, month, year, frequency, aoi } = useMapContext();
 
   return (
-    <div className="sidebar">
+    <div className="sidebar ">
       {groups.map((group) => (
         <div className="accordion-group" key={group.id}>
           <div className="accordion-header">{group.title}</div>
@@ -62,7 +62,7 @@ export default function Sidebar() {
         </div>
       ))}
       <div className="summary">
-        {dataset}_{year}{month}_{aoi}
+        {/* {dataset}_{year}{month}_{aoi} */}
       </div>
     </div>
   );

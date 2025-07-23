@@ -6,6 +6,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   width: 500px;
+  height: 100vh;
 }
 
 .info-panel h3 {

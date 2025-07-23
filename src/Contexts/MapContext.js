@@ -22,7 +22,7 @@ export const MapProvider = ({ children }) => {
   );
   const [dataset, setDataset] = useState("NDVI");
   const [aoi, setAoi] = useState("Senegal");
-  const [month, setMonth] = useState(8);
+  const [month, setMonth] = useState(4);
    const [year, setYear] = useState(new Date().getFullYear());
   const [frequency, setFrequency] = useState("monthly");
 
