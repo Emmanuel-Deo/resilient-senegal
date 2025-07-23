@@ -4,7 +4,6 @@ import Map from "./Items/Map";
 import BasemapChanger from "./Items/BasemapChanger";
 import Legend from "./Items/Legend";
 import MapInfoCard from "./Items/MapInfoCard";
-import ZoomControl from "./Items/ZoomControl";
 
 export default function MapPanel() {
   return (

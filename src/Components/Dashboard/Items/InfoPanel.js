@@ -3,45 +3,54 @@ import { useMapContext } from "../../../Contexts/MapContext";
 import AOIPreview from "./AOIPreview";
 
 import AdminSelectionBar from "./AdminSelectionBar";
-import ZoomControl from "./ZoomControl";
 import AnnualStats from "./AnnualStats";
-import MonthlyStats from "./MonthlyStats";
-import ComparisonPieChart from "./ComparisonPieChart";
-import TaskProgress from "./TaskProgress";
+import DatasetIndicator from "./DatasetIndicator";
+import DatasetOverview from "./DatasetOverview";
+import ChartDescription from "./ChartDescription";
+import YearSelector from "./YearSelector";
 
 export default function InfoPanel() {
   
-  const { selectedAdm1, selectedAdm2, selectedAdm3 , zoomLevel, setZoomLevel, filteredGeoJson, setFilteredGeoJson} = useMapContext();
-  const {
-    year,
-    setYear,
-
-  } = useMapContext();
+  const {  year,
+    setYear,dataset,selectedAdm0,selectedAdm1, selectedAdm2, selectedAdm3 , zoomLevel, setZoomLevel, filteredGeoJson, setFilteredGeoJson} = useMapContext();
+ 
 
   
   return (
+    
     <div className="info-panel">
+      <DatasetIndicator selectedDataset = {dataset}/>
+
       <AdminSelectionBar onGeoJsonChange={setFilteredGeoJson} />
 
-    
-      {/* <h3>{aoi} {dataset} {year}</h3> */}
-
       <AOIPreview
-  selectedAdm1={selectedAdm1}
-  selectedAdm2={selectedAdm2}
-  selectedAdm3={selectedAdm3}
-  geoJsonData={filteredGeoJson}
-/>
-      <div className="year-selector">
-        <button onClick={() => setYear((prev) => Number(prev) - 1)}>«</button>
-        <span className="selected-year">{year}</span>
-        <button onClick={() => setYear((prev) => Number(prev) + 1)}>»</button>
+        selectedAdm1={selectedAdm1}
+        selectedAdm2={selectedAdm2}
+        selectedAdm3={selectedAdm3}
+        geoJsonData={filteredGeoJson}
+      />
+
+          <div>
+      {/* <YearSelector /> */}
+    </div>
+
+
+      <DatasetOverview selectedDataset={dataset} year={year} />
+
+      <div style={{ width: "380px", height: "300px" , marginTop:'32px'}}>
+        <AnnualStats />
+        {/* <TaskProgress/> */}
       </div>
 
-<div style={{ width: "380px", height: "300px" , marginTop:'32px'}}>
-  <AnnualStats />
-  <TaskProgress/>
-</div>
+      <ChartDescription
+        year={year}
+        dataset={dataset}
+        selectedAdm0={selectedAdm0}
+        selectedAdm1={selectedAdm1}
+        selectedAdm2={selectedAdm2}
+        selectedAdm3={selectedAdm3}
+      />
+
 
     </div>
   );

@@ -1,10 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import {
+  ZoomControl,
   MapContainer,
   TileLayer,
   WMSTileLayer,
   FeatureGroup,
 } from "react-leaflet";
+import { FullscreenControl } from "react-leaflet-fullscreen";
+import "react-leaflet-fullscreen/styles.css";
+
 import { EditControl } from "react-leaflet-draw";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
@@ -20,7 +24,6 @@ export default function Map() {
     layerName: defaultLayerName,
     ltmLayerName,
     selectedBasemap,
-    zoomLevel,
     year,
     month,
     dataset,
@@ -273,6 +276,8 @@ export default function Map() {
         {isComparing ? "Exit Compare" : "Start Compare"}
       </button>
 
+    
+
       {/* Opacity Control */}
       <div style={{ position: "absolute", zIndex: 10000, top: "10px", right: "224px", backgroundColor: "#fff", padding: "6px 8px", borderRadius: "6px", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", display: "flex", alignItems: "center", gap: "8px", fontSize: "14px" }}>
         <label htmlFor="opacityRange" style={{ fontWeight: 500 }}>Opacity</label>
@@ -281,17 +286,21 @@ export default function Map() {
           setOpacity(newOpacity);
           leftCompareLayerRef.current?.setOpacity(newOpacity);
           rightCompareLayerRef.current?.setOpacity(newOpacity);
-        }} />
+        }}/>
       </div>
 
       {/* Map */}
       <MapContainer
         zoomControl={false}
+        attributionControl={false}
         center={[13.795625802430228, -14.556901049379832]}
-        zoom={zoomLevel}
+        zoom={8}
         style={{ height: "100%", width: "100%" }}
         className="custom-map"
       >
+        <ZoomControl/>
+        <FullscreenControl position="topleft"/>
+
         <ZoomToGeoJSONBounds data={customZoomGeoJSON || filteredGeoJson} />
         <TileLayer url={selectedBasemap} />
         {showWMS && activeLayerName && (

@@ -39,3 +39,18 @@ body,
 .leaflet-top.leaflet-left {
   top: 32px !important; /* adjust as needed */
 }
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+  
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 12px;
+  
+
+	}

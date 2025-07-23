@@ -99,8 +99,7 @@ const AnnualStats = () => {
         <YAxis tick={{ fontSize: 10 }} />
         <Tooltip contentStyle={{ fontSize: 10 }} />
         <Legend wrapperStyle={{ fontSize: 10 }} />
-         <ReferenceLine x={month} label="Selected Month" stroke="red" strokeDasharray="3 3" strokeWidth={3}/>
-      
+        <ReferenceLine x={month} stroke="lightgray" strokeWidth={5} />
         <Line type="monotone" dataKey="observed" stroke="#82ca9d" strokeWidth={2} name="Observed" />
         <Line type="monotone" dataKey="ltm" stroke="#ff7300" strokeWidth={2} name="LTM" />
       </LineChart>
