@@ -18,6 +18,8 @@ import "./map.css";
 import { useMapContext } from "../../../Contexts/MapContext";
 import ZoomToGeoJSONBounds from "./ZoomToGeoJSONBounds";
 import { handlePolygonDraw } from "../utils/handlePolygonDraw";
+import GeoJSONUploadDropzone from "./GeoJSONUploadDropzone";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function Map() {
   const {
@@ -35,6 +37,7 @@ export default function Map() {
     customLtmClassification, 
     setCustomLtmClassification,
     setServerResponse,
+    statsData, setStatsData
   } = useMapContext();
 
   const [customObsLayers, setCustomObsLayers] = useState([]);
@@ -47,6 +50,77 @@ export default function Map() {
   const [opacity, setOpacity] = useState(1);
 
 
+  const [showUploadZone, setShowUploadZone] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  const toggleUploadZone = () => {
+    setShowUploadZone((prev) => !prev);
+    setCustomObsLayers([]);
+    setCustomLtmLayers([]);
+    setStatsData([]);
+    setShowWMS(false);
+    setEnableDraw(false);
+  };
+  
+
+async function handleGeoJSONUpload(uploadedGeoJSON) {
+  console.log("Parsed GeoJSON:", uploadedGeoJSON);
+
+  const firstFeature = uploadedGeoJSON.features?.[0];
+  if (!firstFeature) {
+    showErrorToast("No valid features found in uploaded GeoJSON.");
+    return;
+  }
+
+  const customZoomGeoJSON = {
+    type: "FeatureCollection",
+    features: [firstFeature],
+  };
+  setcustomZoomGeoJSON(customZoomGeoJSON);
+
+  setIsLoading(true); // Start loading
+
+  try {
+    console.log('Loading state 1:',isLoading)
+    const result = await handlePolygonDraw({
+      drawnGeoJSON: firstFeature,
+      backendURL: "http://127.0.0.1:8000",
+      year,
+      dataset,
+    });
+
+    if (result?.error) {
+      showErrorToast(result.error);
+      return;
+    }
+
+    setServerResponse(result);
+    setShowUploadZone((prev) => !prev);
+
+    if (result?.observationResults.length > 0 && result?.ltmResults.length > 0) {
+      setCustomObsLayers(result.observationResults);
+      setCustomLtmLayers(result.ltmResults);
+      updateCustomStats(result.observationResults, result.ltmResults);
+      setShowWMS(true);
+    }
+
+    const leafletLayer = L.geoJSON(firstFeature);
+    drawRef.current?.clearLayers();
+    leafletLayer.eachLayer((layer) => drawRef.current?.addLayer(layer));
+
+    setEnableDraw(false);
+    setHasStartedDraw(false);
+  } catch (error) {
+    console.error("Error during polygon upload:", error);
+    showErrorToast("An error occurred while processing the uploaded polygon.");
+  } finally {
+    setIsLoading(false); // Stop loading
+  console.log('Loading state:',isLoading)
+
+  }
+  
+}
 
 
 
@@ -251,28 +325,67 @@ export default function Map() {
 
   return (
     <>
+  
+    {isLoading && (
+        <div style={{ 
+          position: "absolute", 
+          top: "50%", 
+          left: "50%", 
+          transform: "translate(-50%, -50%)", 
+          zIndex: 10000 
+        }}>
+          <LoadingSpinner color="#007bff" loading={true} size={50}  />
+        </div>
+
+    )}
+
       {/* Toast */}
       {errorMessage && (
-        <div style={{ position: "absolute", top: "60px", left: "10px", zIndex: 10000, backgroundColor: "#d32f2f", color: "#fff", padding: "10px 16px", borderRadius: "6px", boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)", maxWidth: "320px", fontSize: "14px", lineHeight: "1.4" }}>
+        <div style={{ position: "absolute", top: "60px", left: "10px", zIndex: 10000, backgroundColor: "#d32f2f", color: "#fff", padding: "10px 16px", borderRadius: "3px", boxShadow: "0 2px 10px rgba(0, 0, 0, 0.3)", maxWidth: "320px", fontSize: "14px", lineHeight: "1.4" }}>
           ⚠️ {errorMessage}
         </div>
       )}
 
       {/* Compare Legend */}
       {isComparing && (
-        <div style={{ position: "absolute", top: "10px", left: "550px", zIndex: 10000, backgroundColor: "#ffffff", border: "1px solid #ccc", borderRadius: "6px", padding: "6px 12px", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", display: "flex", gap: "12px", fontWeight: 600, fontSize: "13px" }}>
+        <div style={{ position: "absolute", top: "10px", left: "550px", zIndex: 10000, backgroundColor: "#ffffff", border: "1px solid #ccc", borderRadius: "3px", padding: "6px 12px", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", display: "flex", gap: "12px", fontWeight: 600, fontSize: "13px" }}>
           <span style={{ color: "#2196f3" }}>⬅️ {dataset} - {year}</span>
           <span style={{ color: "#7d7d7dff", fontSize: "18px" }}>|</span>
           <span style={{ color: "#f44336" }}>{dataset} - LTM ➡️</span>
         </div>
       )}
 
-      {/* Draw & Compare Buttons */}
-      <button onClick={startPolygonDraw} style={{ position: "absolute", zIndex: 10000, top: "10px", left: "10px", padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500", boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>
+      {/* Draw Polygon Button*/}
+      <button onClick={startPolygonDraw} style={{ position: "absolute", zIndex: 10000, top: "10px", left: "10px", padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000", border: "none", borderRadius: "3px", cursor: "pointer", fontWeight: "500", boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>
         {(customObsLayers.length || hasStartedDraw) ? "Clear Polygon" : "Draw Polygon"}
       </button>
 
-      <button onClick={isComparing ? stopCompare : startCompare} style={{ position: "absolute", zIndex: 10000, top: "10px", left: "124px", padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500", boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>
+<button
+  onClick={toggleUploadZone}
+  style={{
+    position: "absolute",
+    zIndex: 10000,
+    top: "10px",
+    left: "124px",
+    padding: "6px 12px",
+    backgroundColor: "#ffffff",
+    color: "#000000",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontWeight: "500",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+  }}
+>
+  {showUploadZone ? "Close  Upload" : "Upload Polygon"}
+</button>
+
+
+
+
+      {/* Compare Buttons */}
+
+      <button onClick={isComparing ? stopCompare : startCompare} style={{ position: "absolute", zIndex: 10000, top: "10px", left: "250px", padding: "6px 12px", backgroundColor: "#ffffff", color: "#000000", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "500", boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>
         {isComparing ? "Exit Compare" : "Start Compare"}
       </button>
 
@@ -302,7 +415,7 @@ export default function Map() {
         <FullscreenControl position="topleft"/>
 
         <ZoomToGeoJSONBounds data={customZoomGeoJSON || filteredGeoJson} />
-        <TileLayer url={selectedBasemap} />
+        <TileLayer url={selectedBasemap}/>
         {showWMS && activeLayerName && (
           <WMSTileLayer
             key={activeLayerName}
@@ -354,6 +467,15 @@ export default function Map() {
             />
           )}
         </FeatureGroup>
+
+        {showUploadZone && (
+  <div style={{ position: "absolute", zIndex: 9999, top: "50px", left: "124px", backgroundColor: "#fff", padding: "10px", borderRadius: "8px", boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>
+    <GeoJSONUploadDropzone onUpload={handleGeoJSONUpload} />
+  </div>
+)}
+
+
+
       </MapContainer>
     </>
   );

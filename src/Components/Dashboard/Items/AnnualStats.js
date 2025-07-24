@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { useMapContext } from "../../../Contexts/MapContext";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } from 'recharts';
+import LoadingSpinner from "./LoadingSpinner";
 
 // Supabase setup
 const supabaseUrl = "https://gyjbkzxtsxbpwjmbvilm.supabase.co";
@@ -9,11 +10,10 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const AnnualStats = () => {
-  const [statsData, setStatsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  const { selectedAdm1, selectedAdm2, selectedAdm3, dataset, year, month, serverResponse } = useMapContext();
+  const { statsData, setStatsData, selectedAdm1, selectedAdm2, selectedAdm3, dataset, year, month, serverResponse } = useMapContext();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -87,9 +87,10 @@ const AnnualStats = () => {
     fetchStats();
   }, [selectedAdm1, selectedAdm2, selectedAdm3, dataset, year, serverResponse]);
 
-  if (loading) return <p>Loading stats...</p>;
+  if (loading) return <LoadingSpinner />;
+
   if (error) return <p>Error: {error}</p>;
-  if (!statsData || statsData.length === 0) return <p>No data available.</p>;
+  if (!statsData || statsData.length === 0) return <p>No Area Data to Analyse</p>;
 
   return (
     <ResponsiveContainer width="100%" height="100%">

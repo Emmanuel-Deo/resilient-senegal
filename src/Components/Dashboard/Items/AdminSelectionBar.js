@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./AdminSelectionBar.css";
 import { useMapContext } from "../../../Contexts/MapContext";
+import YearSelector from "./YearSelector";
 
 export default function AdminSelectionBar({ onGeoJsonChange }) {
   const [geoJsonData, setGeoJsonData] = useState(null);
@@ -114,8 +115,19 @@ export default function AdminSelectionBar({ onGeoJsonChange }) {
   }, [selectedAdm1, selectedAdm2, selectedAdm3, geoJsonData, setAoi, onGeoJsonChange]);
 
   return (
-    <div className="admin-selection-bar">
-      <select
+   <div>
+      <div style={{display:"flex", justifyContent:"space-between", }}> 
+         <div style={{  fontSize: '1rem', fontWeight: '600',  color: '#1a4f8b', display:"flex", alignItems : "center",}}> 
+            Area of Interest
+          </div>
+
+          <YearSelector/>
+      </div>
+     
+ 
+   
+   <div className="admin-selection-bar">
+  <select
         value={selectedAdm1}
         onChange={e => setSelectedAdm1(e.target.value)}
       >
@@ -146,6 +158,10 @@ export default function AdminSelectionBar({ onGeoJsonChange }) {
           <option key={option} value={option}>{option}</option>
         ))}
       </select>
-    </div>
+
+   </div>
+    
+   </div>
+  
   );
 }

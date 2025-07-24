@@ -2,9 +2,11 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   gap: 0.5rem; /* Reduced gap for a more compact layout */
-  padding: 0.5rem;
+  padding-top: 16px;
   flex-wrap: wrap; /* Allow wrapping on smaller screens */
-  max-width: 300px; /* Restrict width if needed */
+  /* max-width: 300px;  */
+
+ 
 }
 
 .admin-selection-bar select {

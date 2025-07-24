@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import LoadingSpinner from "./LoadingSpinner";
 
 // Supabase setup
 const supabaseUrl = "https://gyjbkzxtsxbpwjmbvilm.supabase.co";
@@ -82,7 +83,7 @@ const MonthlyStats = () => {
     }))
     .filter((item) => item.value > 0);
 
-  if (!customObsClassification && loading) return <p>Loading stats...</p>;
+  if (!customObsClassification && loading) return <LoadingSpinner />;
   if (!customObsClassification && error) return <p>Error: {error}</p>;
   if (!customObsClassification && (!statsData || statsData.length === 0))
     return <p>No data available.</p>;

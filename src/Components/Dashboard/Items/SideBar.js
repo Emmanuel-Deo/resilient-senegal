@@ -61,9 +61,7 @@ export default function Sidebar() {
           </div>
         </div>
       ))}
-      <div className="summary">
-        {/* {dataset}_{year}{month}_{aoi} */}
-      </div>
+
     </div>
   );
 }

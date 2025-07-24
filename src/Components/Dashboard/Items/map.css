@@ -15,7 +15,9 @@
 
 /* Popup styling override (optional) */
 .leaflet-popup-content-wrapper {
-  border-radius: 8px;
+  /* border-radius: 8px; */
+  /* border-radius: 12px; */
+
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -37,7 +39,7 @@ body,
 }
 
 .leaflet-top.leaflet-left {
-  top: 32px !important; /* adjust as needed */
+  top: 32px 
 }
 
 /* zoom control */

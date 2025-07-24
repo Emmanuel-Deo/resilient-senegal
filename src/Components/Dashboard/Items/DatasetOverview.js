@@ -23,12 +23,7 @@ export default function DatasetOverview({ selectedDataset, year, setYear }) {
         <div style={{ fontSize: '1rem', fontWeight: '600',  color: '#1a4f8b', textAlign: 'center' }}> 
           {selectedDataset} Monthly Trend for the Year {year} 
         </div>
-       
-        {/* Right: Dataset Title */}
-        {/* <span style={{ fontSize: '0.95rem', fontWeight: '500', color: 'blue', alignItems: 'center' }}>
-          {year}
-        </span> */}
-        {/* <YearSelector year={year} setYear={setYear} /> */}
+      
       </div>
     </div>
   );

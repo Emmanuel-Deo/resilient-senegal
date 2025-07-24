@@ -42,7 +42,7 @@ export default function AOIPreview({
   }
 
   return (
-    <div className="aoi-preview">
+    <div className="aoi-preview" style={{ }}>
       {/* <h4>Selected Area of Interest (AOI)</h4>
       <ul>
         <li><strong>Region (ADM1):</strong> {selectedAdm1 || "None selected"}</li>
@@ -51,9 +51,15 @@ export default function AOIPreview({
       </ul> */}
 
       {geoJsonData && geoJsonData.features.length > 0 ? (
-        <MapContainer center={center} zoom={zoom} style={{ height: "300px", marginTop: "10px" }}>
+        <MapContainer 
+        center={center} 
+        zoom={zoom} 
+        zoomControl={false}
+        attributionControl={false}
+        style={{ height: "300px", marginTop: "10px", borderRadius:'12px'}}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <AOIZoom data={geoJsonData} />
+          
         </MapContainer>
       ) : (
         <p style={{ marginTop: "10px" }}>No AOI selected or no geometry available.</p>

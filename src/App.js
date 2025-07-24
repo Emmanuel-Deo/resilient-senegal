@@ -13,7 +13,7 @@ function App() {
     <MapProvider>
       <Router>
         <div className="app-container">
-          <Navbar />
+          <Navbar/>
           <div className="app-content">
             <Routes>
               <Route path="/" element={<Home />} />

@@ -14,6 +14,8 @@ export const MapProvider = ({ children }) => {
   const [customLtmClassification, setCustomLtmClassification] = useState(null);
     const [activeLayerName, setActiveLayerName] = useState(null);
   const [activeLtmLayerName, setActiveLtmLayerName] = useState(null);
+    const [statsData, setStatsData] = useState([]);
+  
 
   const [serverResponse, setServerResponse] = useState(null)
 
@@ -91,6 +93,9 @@ export const MapProvider = ({ children }) => {
         setActiveLayerName,
         activeLtmLayerName,
         setActiveLtmLayerName,
+
+        statsData, 
+        setStatsData
       }}
     >
       {children}
